@@ -1,0 +1,23 @@
+name: Apply v1 improvements
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch (idempotente, com verificacao)
+        run: python3 patch_v1.py
+
+      - name: Commit
+        run: |
+          git config user.name "slc-patch"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A site
+          git commit -m "site v1: precos no mobile, CTA de preco, before/after, 22 cidades, (c) 2026, japones, reviews reais, ?src" || echo "nada novo"
+          git push
