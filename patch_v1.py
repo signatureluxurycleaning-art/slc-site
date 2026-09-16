@@ -382,6 +382,31 @@ def patch_services_legal():
     log("services/ + legais: © 2026, bonded, e-mail, ?src")
 
 
+# ═════════════ 5b. rótulos reais de conversão (Google Ads) ══════════════════
+# Os eventos gtag do site apontavam para rótulos placeholder que o Google
+# descarta. Ações criadas em 15/09/2026 (conta 314-199-1480, ambas Secondary):
+#   • "Site - clique para o app"  → RBjKCM2TsfkcEODfpNg_
+#   • "Site - clique ligar/SMS"   → KbSHCOeFsPkcEODfpNg_  (tel: e sms:)
+CONV_LABELS = {
+    "APP_OPEN_LABEL": "RBjKCM2TsfkcEODfpNg_",
+    "PHONE_CLICK_LABEL": "KbSHCOeFsPkcEODfpNg_",
+    "SMS_CLICK_LABEL": "KbSHCOeFsPkcEODfpNg_",
+}
+
+
+def patch_conversion_labels():
+    n = 0
+    for p in ROOT.rglob("*.html"):
+        t = read(p)
+        t2 = t
+        for old, new in CONV_LABELS.items():
+            t2 = t2.replace(f"AW-17096585184/{old}", f"AW-17096585184/{new}")
+        if t2 != t:
+            write(p, t2)
+            n += 1
+    log(f"rótulos de conversão reais aplicados em {n} página(s)")
+
+
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
 PAGE_404 = """<!DOCTYPE html>
@@ -485,6 +510,10 @@ def verify():
     check(tagged >= 22, f"links do app marcados nas cidades ({tagged})")
     check(idx.count("?src=site-") >= 15, f"links do app marcados no index ({idx.count('?src=site-')})")
 
+    left = [str(p) for p in ROOT.rglob("*.html") if "_LABEL'" in read(p)]
+    check(not left, f"nenhum placeholder de conversão restante ({left[:3]})")
+    check("RBjKCM2TsfkcEODfpNg_" in idx and "KbSHCOeFsPkcEODfpNg_" in idx, "rótulos reais no index")
+
     # dicionário ja cobre todas as chaves usadas no index
     keys = set(re.findall(r'data-i18n="([^"]+)"', idx))
     ja_keys = set(re.findall(r'^\s{4}(\w+):', tr[tr.index("ja: {"):], re.M))
@@ -505,6 +534,7 @@ def main():
     patch_css()
     patch_cities()
     patch_services_legal()
+    patch_conversion_labels()
     add_new_files()
 
     print("── mudanças ──")
