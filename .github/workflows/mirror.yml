@@ -23,6 +23,21 @@ jobs:
           cd site
           wget --mirror --page-requisites --no-parent --no-host-directories -e robots=off --user-agent="$UA" --wait=0.2 --tries=3 --timeout=25 -nv -i ../urls.txt || true
           find . -name '*\?*' -type f | while read -r f; do t="${f%%\?*}"; if [ -e "$t" ]; then rm -f "$f"; else mv "$f" "$t"; fi; done
+
+      - name: Fetch srcset/source assets wget missed (webp etc.)
+        run: |
+          set -x
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 SLCMirror"
+          cd site
+          grep -rhoE '"[^"]+[.](webp|jpg|jpeg|png|svg|ico|css|js)([?][^"]*)?"' --include='*.html' . | tr -d '"' | sed 's/[?].*$//' > ../refs_raw.txt || true
+          awk '{u=$0; gsub(/\.\.\//,"",u); sub(/^\.\//,"",u); if (u ~ /^https?:[/][/]/) { if (u ~ /^https:[/][/]signatureluxurycleaning[.]com[/]/) { sub(/^https:[/][/]signatureluxurycleaning[.]com[/]/,"",u) } else next }; sub(/^[/]/,"",u); if (u != "") print u }' ../refs_raw.txt | sort -u > ../refs.txt
+          wc -l ../refs.txt
+          while read -r p; do
+            if [ ! -f "$p" ]; then
+              mkdir -p "$(dirname "$p")"
+              curl -sfSL -A "$UA" "https://signatureluxurycleaning.com/$p" -o "$p" && echo "fetched: $p" || { echo "MISS: $p"; rm -f "$p"; }
+            fi
+          done < ../refs.txt
           find . -type f | sort > ../manifest.txt
           wc -l ../manifest.txt
 
@@ -32,5 +47,5 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           mv manifest.txt site/_manifest.txt
           git add -A site
-          git commit -m "mirror: snapshot do site ao vivo" || echo "nada novo"
+          git commit -m "mirror: snapshot do site ao vivo (com webp/srcset)" || echo "nada novo"
           git push
