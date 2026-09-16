@@ -1,0 +1,36 @@
+name: Mirror live site
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the live site
+        run: |
+          set -x
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36 SLCMirror"
+          rm -rf site urls.txt
+          mkdir -p site
+          curl -sSL -A "$UA" https://signatureluxurycleaning.com/sitemap.xml -o site/sitemap.xml || true
+          { grep -oE '<loc>[^<]+' site/sitemap.xml | sed 's/<loc>//' ; echo "https://signatureluxurycleaning.com/"; } | sort -u > urls.txt
+          cat urls.txt
+          cd site
+          wget --mirror --page-requisites --no-parent --no-host-directories -e robots=off --user-agent="$UA" --wait=0.2 --tries=3 --timeout=25 -nv -i ../urls.txt || true
+          find . -name '*\?*' -type f | while read -r f; do t="${f%%\?*}"; if [ -e "$t" ]; then rm -f "$f"; else mv "$f" "$t"; fi; done
+          find . -type f | sort > ../manifest.txt
+          wc -l ../manifest.txt
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "slc-mirror"
+          git config user.email "actions@users.noreply.github.com"
+          mv manifest.txt site/_manifest.txt
+          git add -A site
+          git commit -m "mirror: snapshot do site ao vivo" || echo "nada novo"
+          git push
