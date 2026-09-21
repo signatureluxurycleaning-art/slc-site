@@ -638,5 +638,44 @@
       });
     });
   </script>
+
+  <script>
+    // slc-forward-v1 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
+    (function() {
+      var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      var STORE = 'slc:click-params:v1';
+      function readParams() {
+        var out = {};
+        try {
+          var q = new URLSearchParams(location.search);
+          KEYS.forEach(function(k) { var v = q.get(k); if (v) out[k] = v.slice(0, 200); });
+          if (Object.keys(out).length) { sessionStorage.setItem(STORE, JSON.stringify(out)); return out; }
+          var saved = sessionStorage.getItem(STORE);
+          return saved ? JSON.parse(saved) : {};
+        } catch (e) { return out; }
+      }
+      function forward() {
+        var params = readParams();
+        if (!Object.keys(params).length) return;
+        document.querySelectorAll('a[href*="app.signatureluxurycleaning.com"]').forEach(function(a) {
+          try {
+            var u = new URL(a.getAttribute('href'), location.href);
+            KEYS.forEach(function(k) { if (params[k] && !u.searchParams.has(k)) u.searchParams.set(k, params[k]); });
+            a.setAttribute('href', u.toString());
+          } catch (e) {}
+        });
+      }
+      function fixHash() {
+        if (!location.hash || location.hash.length < 2) return;
+        var el = document.getElementById(location.hash.slice(1));
+        if (!el) return;
+        var go = function() { el.scrollIntoView({ block: 'start' }); };
+        setTimeout(go, 350);
+        setTimeout(go, 1200);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forward); else forward();
+      window.addEventListener('load', fixHash);
+    })();
+  </script>
 </body>
 </html>
