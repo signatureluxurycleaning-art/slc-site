@@ -1,6 +1,11 @@
 name: Apply v1 improvements
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Mensagem do commit"
+        required: false
+        default: "site: reaplicar patch_v1.py"
 
 permissions:
   contents: write
@@ -15,9 +20,11 @@ jobs:
         run: python3 patch_v1.py
 
       - name: Commit
+        env:
+          MSG: ${{ github.event.inputs.message }}
         run: |
           git config user.name "slc-patch"
           git config user.email "actions@users.noreply.github.com"
           git add -A site
-          git commit -m "site v1: precos no mobile, CTA de preco, before/after, 22 cidades, (c) 2026, japones, reviews reais, ?src" || echo "nada novo"
+          git commit -m "${MSG:-site: reaplicar patch_v1.py}" -m "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01FBkoNHxX7j49mDqu3TMmWY" || echo "nada novo"
           git push
