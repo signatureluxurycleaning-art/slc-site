@@ -20,6 +20,10 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     site→app ficar atribuível.
  8. 404 com a marca + robots.txt + .htaccess (ErrorDocument na IONOS).
  9. Badge "5.0 — Perfect Score" não cobre mais o "Welcome back!" do mockup.
+10. (21/09) MEDIÇÃO EM TODAS AS PÁGINAS: evento de conversão nas páginas de
+    serviço/legais (só existia na home e cidades — 13 cliques pagos, 0
+    conversões), gclid/utm encaminhados do anúncio até o app, âncoras
+    /#reviews e /#areas rolando na carga.
 
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
@@ -407,6 +411,107 @@ def patch_conversion_labels():
     log(f"rótulos de conversão reais aplicados em {n} página(s)")
 
 
+# ═════════ 5c. medição em TODAS as páginas (21/09/2026) ═════════════════════
+# Raio-X do Google Ads (Sep 1–20): 13 cliques pagos, 100% caindo nas páginas
+# de serviço (/services/regular-cleaning/ e /services/deep-cleaning/) — e ZERO
+# conversões "Site - clique para o app". Causa: o bloco de conversão só existia
+# no index.html e nas 22 páginas de cidade; as páginas de serviço e legais não
+# tinham NENHUM listener. Este passo:
+#   (a) injeta o bloco de conversão (clique→app, tel:, sms:) em toda página
+#       que ainda não o tem;
+#   (b) em TODAS as páginas, encaminha gclid/gbraid/wbraid/utm_* do anúncio
+#       para os links do app (guardados em sessionStorage para sobreviver à
+#       navegação site→site), para o cadastro no app ficar google/cpc;
+#   (c) corrige a âncora na carga (/#reviews, /#areas não rolavam: o scroll
+#       inicial se perdia com o layout carregando).
+CONV_LABEL_APP = "AW-17096585184/RBjKCM2TsfkcEODfpNg_"
+CONV_LABEL_CONTACT = "AW-17096585184/KbSHCOeFsPkcEODfpNg_"
+
+CONV_BLOCK = """
+  <script>
+    // slc-conv-v1 — Google Ads + GA4: clique para o app, ligar e SMS
+    document.addEventListener('DOMContentLoaded', function() {
+      function conv(label, ga4, extra) {
+        if (typeof gtag !== 'function') return;
+        gtag('event', 'conversion', { 'send_to': label });
+        gtag('event', ga4, extra || {});
+      }
+      document.querySelectorAll('a[href*="app.signatureluxurycleaning.com"]').forEach(function(link) {
+        link.addEventListener('click', function() {
+          conv('%(app)s', 'open_app', { 'event_category': 'app', 'event_label': this.textContent.trim().slice(0, 50) });
+        });
+      });
+      document.querySelectorAll('a[href^="tel:"]').forEach(function(link) {
+        link.addEventListener('click', function() { conv('%(contact)s', 'phone_click', { 'event_category': 'contact' }); });
+      });
+      document.querySelectorAll('a[href^="sms:"]').forEach(function(link) {
+        link.addEventListener('click', function() { conv('%(contact)s', 'sms_click', { 'event_category': 'contact' }); });
+      });
+    });
+  </script>
+""" % {"app": CONV_LABEL_APP, "contact": CONV_LABEL_CONTACT}
+
+FORWARD_BLOCK = """
+  <script>
+    // slc-forward-v1 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
+    (function() {
+      var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      var STORE = 'slc:click-params:v1';
+      function readParams() {
+        var out = {};
+        try {
+          var q = new URLSearchParams(location.search);
+          KEYS.forEach(function(k) { var v = q.get(k); if (v) out[k] = v.slice(0, 200); });
+          if (Object.keys(out).length) { sessionStorage.setItem(STORE, JSON.stringify(out)); return out; }
+          var saved = sessionStorage.getItem(STORE);
+          return saved ? JSON.parse(saved) : {};
+        } catch (e) { return out; }
+      }
+      function forward() {
+        var params = readParams();
+        if (!Object.keys(params).length) return;
+        document.querySelectorAll('a[href*="app.signatureluxurycleaning.com"]').forEach(function(a) {
+          try {
+            var u = new URL(a.getAttribute('href'), location.href);
+            KEYS.forEach(function(k) { if (params[k] && !u.searchParams.has(k)) u.searchParams.set(k, params[k]); });
+            a.setAttribute('href', u.toString());
+          } catch (e) {}
+        });
+      }
+      function fixHash() {
+        if (!location.hash || location.hash.length < 2) return;
+        var el = document.getElementById(location.hash.slice(1));
+        if (!el) return;
+        var go = function() { el.scrollIntoView({ block: 'start' }); };
+        setTimeout(go, 350);
+        setTimeout(go, 1200);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forward); else forward();
+      window.addEventListener('load', fixHash);
+    })();
+  </script>
+"""
+
+
+def patch_measurement_everywhere():
+    n_conv = n_fwd = 0
+    for p in sorted(ROOT.rglob("*.html")):
+        t = read(p)
+        if "</body>" not in t:
+            fail(f"{p}: sem </body>")
+            continue
+        t2 = t
+        if "RBjKCM2TsfkcEODfpNg_" not in t2 and "slc-conv-v1" not in t2:
+            t2 = t2.replace("</body>", CONV_BLOCK + "</body>", 1)
+            n_conv += 1
+        if "slc-forward-v1" not in t2:
+            t2 = t2.replace("</body>", FORWARD_BLOCK + "</body>", 1)
+            n_fwd += 1
+        if t2 != t:
+            write(p, t2)
+    log(f"medição: bloco de conversão em {n_conv} página(s) que não tinham; encaminhamento gclid/utm + âncora em {n_fwd} página(s)")
+
+
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
 PAGE_404 = """<!DOCTYPE html>
@@ -513,6 +618,15 @@ def verify():
     left = [str(p) for p in ROOT.rglob("*.html") if "_LABEL'" in read(p)]
     check(not left, f"nenhum placeholder de conversão restante ({left[:3]})")
     check("RBjKCM2TsfkcEODfpNg_" in idx and "KbSHCOeFsPkcEODfpNg_" in idx, "rótulos reais no index")
+    pages = [p for p in ROOT.rglob("*.html")]
+    no_conv = [str(p.relative_to(ROOT)) for p in pages if "RBjKCM2TsfkcEODfpNg_" not in read(p)]
+    check(not no_conv, f"TODAS as {len(pages)} páginas têm o evento de conversão (faltam: {no_conv[:4]})")
+    no_fwd = [str(p.relative_to(ROOT)) for p in pages if "slc-forward-v1" not in read(p)]
+    check(not no_fwd, f"TODAS as páginas encaminham gclid/utm para o app (faltam: {no_fwd[:4]})")
+    dup = [str(p.relative_to(ROOT)) for p in pages if read(p).count("slc-forward-v1") != 1 or read(p).count("RBjKCM2TsfkcEODfpNg_") != 1]
+    check(not dup, f"nenhuma página com bloco duplicado ({dup[:4]})")
+    svc = read(ROOT / "services/regular-cleaning/index.html")
+    check("slc-conv-v1" in svc and "gclid" in svc, "página de serviço (onde caem os cliques pagos) mede e encaminha")
 
     # dicionário ja cobre todas as chaves usadas no index
     keys = set(re.findall(r'data-i18n="([^"]+)"', idx))
@@ -536,6 +650,7 @@ def main():
     patch_services_legal()
     patch_conversion_labels()
     add_new_files()
+    patch_measurement_everywhere()  # depois do 404.html, que é reescrito acima
 
     print("── mudanças ──")
     for c in CHANGES:
