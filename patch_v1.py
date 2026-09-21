@@ -453,7 +453,7 @@ CONV_BLOCK = """
 
 FORWARD_BLOCK = """
   <script>
-    // slc-forward-v1 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
+    // slc-forward-v2 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
     (function() {
       var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
       var STORE = 'slc:click-params:v1';
@@ -482,7 +482,9 @@ FORWARD_BLOCK = """
         if (!location.hash || location.hash.length < 2) return;
         var el = document.getElementById(location.hash.slice(1));
         if (!el) return;
-        var go = function() { el.scrollIntoView({ block: 'start' }); };
+        // 'instant' ignora o scroll-behavior:smooth do html — o scroll suave era
+        // justamente o que se perdia com o layout ainda carregando.
+        var go = function() { el.scrollIntoView({ block: 'start', behavior: 'instant' }); };
         setTimeout(go, 350);
         setTimeout(go, 1200);
       }
@@ -504,7 +506,9 @@ def patch_measurement_everywhere():
         if "RBjKCM2TsfkcEODfpNg_" not in t2 and "slc-conv-v1" not in t2:
             t2 = t2.replace("</body>", CONV_BLOCK + "</body>", 1)
             n_conv += 1
-        if "slc-forward-v1" not in t2:
+        # versão antiga do bloco (v1, scroll suave) é removida antes de inserir a atual
+        t2 = re.sub(r"\n  <script>\n    // slc-forward-v1 [\s\S]*?</script>\n", "\n", t2)
+        if "slc-forward-v2" not in t2:
             t2 = t2.replace("</body>", FORWARD_BLOCK + "</body>", 1)
             n_fwd += 1
         if t2 != t:
@@ -621,9 +625,9 @@ def verify():
     pages = [p for p in ROOT.rglob("*.html")]
     no_conv = [str(p.relative_to(ROOT)) for p in pages if "RBjKCM2TsfkcEODfpNg_" not in read(p)]
     check(not no_conv, f"TODAS as {len(pages)} páginas têm o evento de conversão (faltam: {no_conv[:4]})")
-    no_fwd = [str(p.relative_to(ROOT)) for p in pages if "slc-forward-v1" not in read(p)]
+    no_fwd = [str(p.relative_to(ROOT)) for p in pages if "slc-forward-v2" not in read(p)]
     check(not no_fwd, f"TODAS as páginas encaminham gclid/utm para o app (faltam: {no_fwd[:4]})")
-    dup = [str(p.relative_to(ROOT)) for p in pages if read(p).count("slc-forward-v1") != 1 or read(p).count("RBjKCM2TsfkcEODfpNg_") != 1]
+    dup = [str(p.relative_to(ROOT)) for p in pages if read(p).count("slc-forward-v") != 1 or read(p).count("RBjKCM2TsfkcEODfpNg_") != 1]
     check(not dup, f"nenhuma página com bloco duplicado ({dup[:4]})")
     svc = read(ROOT / "services/regular-cleaning/index.html")
     check("slc-conv-v1" in svc and "gclid" in svc, "página de serviço (onde caem os cliques pagos) mede e encaminha")
