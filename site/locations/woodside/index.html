@@ -623,8 +623,9 @@
     });
   </script>
 
+
   <script>
-    // slc-forward-v1 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
+    // slc-forward-v2 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
     (function() {
       var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
       var STORE = 'slc:click-params:v1';
@@ -653,7 +654,9 @@
         if (!location.hash || location.hash.length < 2) return;
         var el = document.getElementById(location.hash.slice(1));
         if (!el) return;
-        var go = function() { el.scrollIntoView({ block: 'start' }); };
+        // 'instant' ignora o scroll-behavior:smooth do html — o scroll suave era
+        // justamente o que se perdia com o layout ainda carregando.
+        var go = function() { el.scrollIntoView({ block: 'start', behavior: 'instant' }); };
         setTimeout(go, 350);
         setTimeout(go, 1200);
       }
