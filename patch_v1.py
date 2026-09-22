@@ -24,6 +24,10 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     serviço/legais (só existia na home e cidades — 13 cliques pagos, 0
     conversões), gclid/utm encaminhados do anúncio até o app, âncoras
     /#reviews e /#areas rolando na carga.
+11. (21/09) FORMULÁRIO "personalized price by text" nas 8 páginas de serviço
+    e na home: quem vem do anúncio deixa nome, celular e dados da casa e o
+    dono responde por SMS com valor personalizado (o site NÃO mostra preço;
+    o app segue exigindo cadastro antes do valor — decisão do dono).
 
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
@@ -516,6 +520,314 @@ def patch_measurement_everywhere():
     log(f"medição: bloco de conversão em {n_conv} página(s) que não tinham; encaminhamento gclid/utm + âncora em {n_fwd} página(s)")
 
 
+# ═════════ 5d. formulário "personalized price by text" (21/09/2026) ══════════
+# Decisão do dono: o app continua pedindo cadastro antes do preço (filtra
+# curiosos e concorrentes). Para quem vem do anúncio e não quer se cadastrar,
+# as páginas de serviço e a home ganham um formulário: nome, celular e dados da
+# casa → o Raphael responde por SMS com um valor personalizado. O cliente NÃO
+# vê preço aqui. Envio vai direto ao Worker do app (POST /api/site/quote-request).
+QUOTE_API = "https://slc-app-worker.booking-f8e.workers.dev/api/site/quote-request"
+QUOTE_CONV_LABEL = ""  # rótulo da conversão "Submit lead form" do Google Ads — preencher quando obtido
+
+# slug da página → (id do serviço no app, frequência sugerida)
+QUOTE_SERVICE_BY_SLUG = {
+    "regular-cleaning": ("regular", "biweekly"),
+    "deep-cleaning": ("deep", "onetime"),
+    "move-in-out-cleaning": ("moveinout", "onetime"),
+    "post-construction-cleaning": ("postconstruction", "onetime"),
+    "spring-cleaning": ("spring", "onetime"),
+    "airbnb-cleaning": ("airbnb", "onetime"),
+    "white-glove-deep-clean": ("whiteglove", "onetime"),
+    "office-cleaning": ("office", "onetime"),
+}
+
+QUOTE_SECTION_HTML = """
+  <!-- slc-quote-form v2: two ways to get a price — app (instant, automatic) or personalized text. No price shown here. -->
+  <section class="section qf-section" id="quote-form" data-qf-version="2" data-default-service="%(service)s" data-default-frequency="%(frequency)s" data-app-href="%(app_href)s">
+    <div class="qf-wrap">
+      <div class="qf-intro">
+        <div class="qf-eyebrow">Two ways to get your price</div>
+        <h2 class="qf-title">Instant in the app, or personal by text</h2>
+        <div class="qf-app">
+          <div class="qf-app-badge">⚡ Fastest · fully automatic</div>
+          <h3 class="qf-app-title">Do it all yourself in our app</h3>
+          <ol class="qf-app-steps">
+            <li><span class="qf-step-n">1</span><span><strong>See your exact price</strong> for your home in seconds</span></li>
+            <li><span class="qf-step-n">2</span><span><strong>Pick the day and time</strong> that works for you</span></li>
+            <li><span class="qf-step-n">3</span><span><strong>Book your visit</strong> — confirmed by text, no phone call needed</span></li>
+          </ol>
+          <a class="qf-app-btn" href="%(app_href)s" target="_blank" rel="noopener">📱 Open the App &amp; See My Price</a>
+          <div class="qf-app-fine">No download · Secure · Takes about 2 minutes</div>
+        </div>
+        <ul class="qf-points">
+          <li>Owner-operated · Bonded &amp; insured, background-checked team</li>
+          <li>5.0★ on Google · Belmont to Los Gatos</li>
+        </ul>
+      </div>
+      <form class="qf-form" id="qfForm" novalidate>
+        <div class="qf-form-head">
+          <div class="qf-form-kicker">Prefer a personal text?</div>
+          <h3 class="qf-form-title">Get a personalized price by text</h3>
+          <p class="qf-form-sub">Tell us about your home and Raphael, the owner, will text you a personalized price. No account needed.</p>
+        </div>
+        <div class="qf-grid">
+          <label class="qf-field"><span>Your name</span><input name="name" type="text" autocomplete="name" required maxlength="120" placeholder="First and last name"></label>
+          <label class="qf-field"><span>Mobile number</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="(650) 555-0123"></label>
+          <label class="qf-field"><span>ZIP code</span><input name="zip" type="text" autocomplete="postal-code" inputmode="numeric" required pattern="[0-9]{5}" maxlength="5" placeholder="94301"></label>
+          <label class="qf-field"><span>Home type</span><select name="propertyType"><option value="house">House</option><option value="apt">Apartment / condo</option></select></label>
+          <label class="qf-field qf-half"><span>Bedrooms</span><select name="bedrooms"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option value="7">7+</option></select></label>
+          <label class="qf-field qf-half"><span>Bathrooms</span><select name="bathrooms"><option>1</option><option>1.5</option><option selected>2</option><option>2.5</option><option>3</option><option>3.5</option><option>4</option><option>4.5</option><option value="5">5+</option></select></label>
+          <label class="qf-field"><span>Approx. square feet <em>(optional)</em></span><input name="sqft" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 2,400"></label>
+          <label class="qf-field"><span>Service</span><select name="service">
+            <option value="regular">Regular cleaning</option>
+            <option value="deep">Deep cleaning</option>
+            <option value="moveinout">Move-in / move-out</option>
+            <option value="postconstruction">Post-construction</option>
+            <option value="spring">Spring cleaning</option>
+            <option value="airbnb">Airbnb turnover</option>
+            <option value="whiteglove">White Glove deep clean</option>
+            <option value="personalized">Personalized (you choose rooms)</option>
+            <option value="office">Office cleaning</option>
+          </select></label>
+          <label class="qf-field"><span>How often</span><select name="frequency">
+            <option value="onetime">One-time</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="monthly">Monthly</option>
+          </select></label>
+          <label class="qf-field qf-full"><span>Anything we should know? <em>(optional)</em></span><textarea name="notes" rows="2" maxlength="1500" placeholder="Pets, preferred days, special requests…"></textarea></label>
+        </div>
+        <label class="qf-consent"><input type="checkbox" name="consent" required> <span>Text me my price at this number. One personal reply from Signature Luxury Cleaning; message &amp; data rates may apply. Reply STOP to opt out. <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy</a></span></label>
+        <div class="qf-hp" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <button type="submit" class="qf-btn">💬 Text Me My Price</button>
+        <div class="qf-error" role="alert" hidden></div>
+        <div class="qf-fine">Owner-operated · We never share your number</div>
+        <div class="qf-or"><span>or</span></div>
+        <a class="qf-applink" href="%(app_href)s" target="_blank" rel="noopener">Skip the wait — see your price and book in the app →</a>
+      </form>
+      <div class="qf-success" id="qfSuccess" hidden>
+        <div class="qf-success-icon">✅</div>
+        <h3>Thanks, <span data-qf="firstName">there</span>!</h3>
+        <p>Raphael will text <strong data-qf="phone"></strong> shortly with your personalized price.</p>
+        <p class="qf-success-sub">Want it right now? <a href="%(app_href)s" target="_blank" rel="noopener">See your price and book in the app →</a></p>
+      </div>
+    </div>
+  </section>
+"""
+
+QUOTE_CSS = (
+    "\n/* slc-quote-v1 */"
+    ".qf-section{background:var(--navy);padding:3.5rem 1rem;color:#fff}"
+    ".qf-wrap{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:2.5rem;align-items:start}"
+    ".qf-eyebrow{color:var(--gold-light);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:.6rem}"
+    ".qf-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.4vw,2.7rem);line-height:1.12;color:#fff;margin:0 0 .9rem}"
+    ".qf-sub{color:rgba(255,255,255,.78);line-height:1.65;font-size:1rem;margin:0 0 1.2rem}"
+    ".qf-points{list-style:none;padding:0;margin:0 0 1.4rem;display:grid;gap:.45rem}"
+    ".qf-points li{color:rgba(255,255,255,.85);font-size:.92rem;padding-left:1.4rem;position:relative}"
+    ".qf-points li:before{content:'✓';position:absolute;left:0;color:var(--gold-light);font-weight:700}"
+    ".qf-applink{color:var(--gold-light);font-weight:600;text-decoration:none;font-size:.95rem;border-bottom:1px solid rgba(226,185,106,.45)}"
+    ".qf-form{background:#fff;color:var(--text-dark);border-radius:16px;padding:1.5rem;box-shadow:0 18px 50px rgba(0,0,0,.28)}"
+    ".qf-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem 1rem}"
+    ".qf-field{display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;font-weight:600;color:var(--gray-700)}"
+    ".qf-field em{font-weight:400;color:var(--gray-500);font-style:normal}"
+    ".qf-field input,.qf-field select,.qf-field textarea{font:inherit;font-size:16px;font-weight:400;color:var(--text-dark);border:1px solid var(--gray-300);border-radius:10px;padding:.7rem .8rem;background:#fff;width:100%;min-width:0}"
+    ".qf-field input:focus,.qf-field select:focus,.qf-field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.18)}"
+    ".qf-field.qf-invalid input,.qf-field.qf-invalid select{border-color:#c0392b}"
+    ".qf-full{grid-column:1/-1}"
+    ".qf-consent{display:flex;gap:.6rem;align-items:flex-start;margin:1rem 0 .9rem;font-size:.75rem;color:var(--gray-500);line-height:1.5}"
+    ".qf-consent input{margin-top:.2rem;flex:none;width:16px;height:16px;accent-color:var(--gold)}"
+    ".qf-consent a{color:var(--gold);text-decoration:none}"
+    ".qf-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}"
+    ".qf-btn{width:100%;border:0;cursor:pointer;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;font-size:1.05rem;padding:1rem 1.2rem;border-radius:50px;box-shadow:0 8px 24px rgba(200,151,58,.35);transition:transform .15s}"
+    ".qf-btn:hover{transform:translateY(-1px)}.qf-btn[disabled]{opacity:.7;cursor:wait;transform:none}"
+    ".qf-error{margin-top:.8rem;background:#fdf1ef;color:#8a2a1e;border:1px solid #f1c7c0;border-radius:10px;padding:.75rem .9rem;font-size:.88rem;line-height:1.5}"
+    ".qf-error a{color:#8a2a1e;font-weight:700}"
+    ".qf-fine{margin-top:.7rem;text-align:center;font-size:.72rem;color:var(--gray-500)}"
+    ".qf-success{background:#fff;color:var(--text-dark);border-radius:16px;padding:2rem 1.5rem;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.28)}"
+    ".qf-success-icon{font-size:2.4rem;margin-bottom:.4rem}"
+    ".qf-success h3{font-family:'Cormorant Garamond',serif;font-size:1.9rem;margin:0 0 .5rem;color:var(--navy)}"
+    ".qf-success p{color:var(--text-body);line-height:1.6;margin:0 0 .6rem}"
+    ".qf-success-sub a{color:var(--gold);font-weight:600;text-decoration:none}"
+    ".qf-app{background:rgba(255,255,255,.06);border:1px solid rgba(200,151,58,.45);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin:.2rem 0 1.3rem;box-shadow:0 10px 30px rgba(0,0,0,.22)}"
+    ".qf-app-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:50px;margin-bottom:.7rem}"
+    ".qf-app-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:#fff;margin:0 0 .8rem;line-height:1.15}"
+    ".qf-app-steps{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:.55rem}"
+    ".qf-app-steps li{display:flex;gap:.7rem;align-items:flex-start;color:rgba(255,255,255,.88);font-size:.94rem;line-height:1.45}"
+    ".qf-app-steps strong{color:#fff}"
+    ".qf-step-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:700;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;margin-top:.05rem}"
+    ".qf-app-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;font-size:1rem;padding:.95rem 1.2rem;border-radius:50px;text-decoration:none;box-shadow:0 8px 24px rgba(200,151,58,.35);transition:transform .15s}"
+    ".qf-app-btn:hover{transform:translateY(-1px)}"
+    ".qf-app-fine{margin-top:.6rem;text-align:center;font-size:.74rem;color:rgba(255,255,255,.6)}"
+    ".qf-form-head{margin-bottom:1rem}"
+    ".qf-form-kicker{color:var(--gold);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:.3rem}"
+    ".qf-form-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--navy);margin:0 0 .35rem;line-height:1.15}"
+    ".qf-form-sub{color:var(--text-body);font-size:.9rem;line-height:1.5;margin:0}"
+    ".qf-or{display:flex;align-items:center;gap:.8rem;margin:1rem 0 .6rem;color:var(--gray-500);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em}"
+    ".qf-or:before,.qf-or:after{content:'';flex:1;height:1px;background:var(--gray-300)}"
+    ".qf-form .qf-applink{display:block;text-align:center;color:var(--gold);border-bottom:0;font-size:.92rem}"
+    "@media(max-width:860px){.qf-wrap{grid-template-columns:1fr;gap:1.6rem}.qf-section{padding:2.6rem 1rem}.qf-grid{grid-template-columns:1fr 1fr}.qf-grid .qf-field:not(.qf-half):not(.qf-full){grid-column:1/-1}.qf-form{padding:1.2rem}.qf-title{font-size:1.75rem}}"
+)
+
+QUOTE_JS = """
+  <script>
+    // slc-quote-v1 — envia o pedido de cotação ao Worker; nunca mostra preço aqui
+    (function() {
+      var API = '%(api)s';
+      var CONV_LABEL = '%(label)s';
+      var sec = document.getElementById('quote-form');
+      var form = document.getElementById('qfForm');
+      if (!sec || !form) return;
+      var startedAt = Date.now();
+      var byName = function(n) { return form.querySelector('[name="' + n + '"]'); };
+      // pré-seleção pela página
+      var svc = sec.getAttribute('data-default-service');
+      var freq = sec.getAttribute('data-default-frequency');
+      if (svc && byName('service').querySelector('option[value="' + svc + '"]')) byName('service').value = svc;
+      if (freq) byName('frequency').value = freq;
+      byName('service').addEventListener('change', function() {
+        byName('frequency').value = this.value === 'regular' ? 'biweekly' : 'onetime';
+      });
+      // parâmetros do anúncio (mesma chave do encaminhamento gclid)
+      function clickParams() {
+        var out = {};
+        try {
+          var q = new URLSearchParams(location.search);
+          var keys = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+          keys.forEach(function(k) { var v = q.get(k); if (v) out[k] = v.slice(0, 200); });
+          if (!Object.keys(out).length) {
+            var saved = sessionStorage.getItem('slc:click-params:v1');
+            if (saved) { var s = JSON.parse(saved); keys.forEach(function(k) { if (s[k]) out[k] = String(s[k]).slice(0, 200); }); }
+          }
+        } catch (e) {}
+        return out;
+      }
+      function showError(html) {
+        var box = form.querySelector('.qf-error');
+        box.innerHTML = html;
+        box.hidden = false;
+      }
+      function mark(name, bad) {
+        var el = byName(name); if (!el) return;
+        var field = el.closest('.qf-field'); if (field) field.classList.toggle('qf-invalid', !!bad);
+      }
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var box = form.querySelector('.qf-error'); box.hidden = true;
+        var name = byName('name').value.trim();
+        var phoneDigits = byName('phone').value.replace(/\\D/g, '');
+        var zip = byName('zip').value.replace(/\\D/g, '');
+        var consent = byName('consent').checked;
+        var bad = [];
+        if (name.length < 2) bad.push('name');
+        if (!(phoneDigits.length === 10 || (phoneDigits.length === 11 && phoneDigits.charAt(0) === '1'))) bad.push('phone');
+        if (!/^\\d{5}$/.test(zip)) bad.push('zip');
+        ['name', 'phone', 'zip'].forEach(function(n) { mark(n, bad.indexOf(n) >= 0); });
+        if (!consent) bad.push('consent');
+        if (bad.length) {
+          showError(bad.indexOf('consent') >= 0 && bad.length === 1
+            ? 'Please check the box so we can text you back.'
+            : 'Please check the highlighted fields — we need a name, a US mobile number and a 5-digit ZIP.');
+          return;
+        }
+        var params = clickParams();
+        var payload = {
+          name: name,
+          phone: byName('phone').value.trim(),
+          zip: zip,
+          propertyType: byName('propertyType').value,
+          bedrooms: byName('bedrooms').value,
+          bathrooms: byName('bathrooms').value,
+          sqft: byName('sqft').value.replace(/[^0-9]/g, ''),
+          service: byName('service').value,
+          frequency: byName('frequency').value,
+          notes: byName('notes').value.trim(),
+          consent: true,
+          website: byName('website').value,
+          startedAt: startedAt,
+          page: location.pathname,
+          referrer: (function() { try { return document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) { return ''; } })()
+        };
+        if (!payload.sqft) delete payload.sqft;
+        if (!payload.referrer) delete payload.referrer;
+        Object.keys(params).forEach(function(k) { payload[k] = params[k]; });
+        var btn = form.querySelector('.qf-btn');
+        btn.disabled = true; btn.textContent = 'Sending…';
+        var fallback = 'Something went wrong on our side. Text us directly at <a href="sms:+16506193504?&body=' + encodeURIComponent('Hi! I\\'d like a price for ' + byName('service').options[byName('service').selectedIndex].text.toLowerCase() + ' — ' + name) + '">(650) 619-3504</a> and we\\'ll reply with your price.';
+        fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+          .then(function(r) { return r.json().then(function(j) { return { status: r.status, body: j }; }); })
+          .then(function(res) {
+            if (res.body && res.body.ok) {
+              var ok = document.getElementById('qfSuccess');
+              ok.querySelector('[data-qf="firstName"]').textContent = res.body.firstName || name.split(' ')[0];
+              ok.querySelector('[data-qf="phone"]').textContent = res.body.phoneDisplay || byName('phone').value;
+              form.hidden = true; ok.hidden = false;
+              try { ok.scrollIntoView({ block: 'center', behavior: 'instant' }); } catch (e) {}
+              if (typeof gtag === 'function') {
+                gtag('event', 'generate_lead', { 'event_category': 'lead', 'event_label': 'site_quote_form', 'value': 1 });
+                if (CONV_LABEL) gtag('event', 'conversion', { 'send_to': 'AW-17096585184/' + CONV_LABEL });
+              }
+              return;
+            }
+            btn.disabled = false; btn.textContent = '💬 Text Me My Price';
+            if (res.status === 429) { showError('We already have your request — Raphael will text you shortly. If it\\'s urgent, call <a href="tel:+16506193504">(650) 619-3504</a>.'); return; }
+            if (res.status === 400) {
+              var f = res.body && res.body.field;
+              if (f === 'phone' || f === 'zip' || f === 'name') { mark(f, true); showError('Please double-check your ' + (f === 'zip' ? 'ZIP code' : f === 'phone' ? 'mobile number' : 'name') + '.'); return; }
+            }
+            showError(fallback);
+          })
+          .catch(function() { btn.disabled = false; btn.textContent = '💬 Text Me My Price'; showError(fallback); });
+      });
+    })();
+  </script>
+"""
+
+
+def _hero_end(text):
+    """Índice logo após o </section> do hero (primeiro section com class="hero")."""
+    i = text.find('<section class="hero')
+    if i < 0:
+        return -1
+    j = text.find("</section>", i)
+    return -1 if j < 0 else j + len("</section>")
+
+
+def patch_quote_form():
+    targets = [(ROOT / "services" / slug / "index.html", slug) for slug in QUOTE_SERVICE_BY_SLUG]
+    targets.append((ROOT / "index.html", None))
+    n = 0
+    for p, slug in targets:
+        if not p.exists():
+            fail(f"{p}: não existe")
+            continue
+        t = read(p)
+        # versão anterior da seção (v1, sem a vitrine do app) sai antes de entrar a atual
+        if 'id="quote-form"' in t and 'data-qf-version="2"' not in t:
+            t = re.sub(r"\n  <!-- slc-quote-(?:v1|form)[^\n]*\n  <section class=\"section qf-section\" id=\"quote-form\"[\s\S]*?</section>\n", "\n", t, count=1)
+        if 'id="quote-form"' not in t:
+            service, frequency = QUOTE_SERVICE_BY_SLUG.get(slug, ("regular", "biweekly"))
+            src = f"site-quote-{slug}" if slug else "site-quote-home"
+            app_href = f"https://app.signatureluxurycleaning.com/?src={src}"
+            block = QUOTE_SECTION_HTML % {"service": service, "frequency": frequency, "app_href": app_href}
+            at = _hero_end(t)
+            if at < 0:
+                fail(f"{p}: hero não encontrado para inserir o formulário")
+                continue
+            t = t[:at] + "\n" + block + t[at:]
+            n += 1
+        if "slc-quote-v1 —" not in t:
+            t = t.replace("</body>", (QUOTE_JS % {"api": QUOTE_API, "label": QUOTE_CONV_LABEL}) + "</body>", 1)
+        write(p, t)
+    css_p = ROOT / "assets/style.css"
+    css = read(css_p)
+    # o bloco é uma linha só: remove a versão anterior (se houver) e reescreve —
+    # assim uma correção no CSS chega ao site sem trocar o marcador
+    css = re.sub(r"\n/\* slc-quote-v1 \*/[^\n]*\n", "\n", css)
+    write(css_p, css.rstrip("\n") + "\n" + QUOTE_CSS + "\n")
+    log(f"formulário de cotação por SMS inserido em {n} página(s) (8 serviços + home); CSS e JS no lugar")
+
+
+
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
 PAGE_404 = """<!DOCTYPE html>
@@ -631,6 +943,21 @@ def verify():
     check(not dup, f"nenhuma página com bloco duplicado ({dup[:4]})")
     svc = read(ROOT / "services/regular-cleaning/index.html")
     check("slc-conv-v1" in svc and "gclid" in svc, "página de serviço (onde caem os cliques pagos) mede e encaminha")
+    qf_pages = [ROOT / "services" / s / "index.html" for s in QUOTE_SERVICE_BY_SLUG] + [ROOT / "index.html"]
+    qf_missing = [str(p.relative_to(ROOT)) for p in qf_pages if 'id="quote-form"' not in read(p) or "slc-quote-v1 —" not in read(p)]
+    check(not qf_missing, f"formulário de cotação nas 8 páginas de serviço + home (faltam: {qf_missing[:3]})")
+    qf_dup = [str(p.relative_to(ROOT)) for p in qf_pages if read(p).count('id="quote-form"') != 1 or read(p).count("slc-quote-v1 —") != 1]
+    check(not qf_dup, f"formulário sem duplicar ({qf_dup[:3]})")
+    qf_old = [str(p.relative_to(ROOT)) for p in qf_pages if 'data-qf-version="2"' not in read(p) or "slc-quote-v1:" in read(p)]
+    check(not qf_old, f"seção do formulário na versão atual (v2) em todas ({qf_old[:3]})")
+    qf_app = [str(p.relative_to(ROOT)) for p in qf_pages if read(p).count("qf-app-btn") != 1 or "See your exact price" not in read(p)]
+    check(not qf_app, f"vitrine do app (3 passos + botão) dentro do bloco em todas ({qf_app[:3]})")
+    check("/* slc-quote-v1 */" in css and css.count("/* slc-quote-v1 */") == 1, "CSS do formulário presente uma vez")
+    deep = read(ROOT / "services/deep-cleaning/index.html")
+    check('data-default-service="deep"' in deep and 'data-default-frequency="onetime"' in deep, "deep-cleaning pré-seleciona Deep / one-time")
+    check('data-default-service="regular"' in svc and 'data-default-frequency="biweekly"' in svc, "regular-cleaning pré-seleciona Regular / every 2 weeks")
+    leak = [str(p.relative_to(ROOT)) for p in qf_pages if "qf-section" in read(p) and re.search(r'qf-[a-z]+[^<]*\$\d', read(p))]
+    check(not leak, f"o formulário não mostra preço nenhum ({leak[:3]})")
 
     # dicionário ja cobre todas as chaves usadas no index
     keys = set(re.findall(r'data-i18n="([^"]+)"', idx))
@@ -655,6 +982,7 @@ def main():
     patch_conversion_labels()
     add_new_files()
     patch_measurement_everywhere()  # depois do 404.html, que é reescrito acima
+    patch_quote_form()
 
     print("── mudanças ──")
     for c in CHANGES:
