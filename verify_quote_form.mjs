@@ -98,7 +98,8 @@ async function newCtx(mobile = true) {
   check(!(await page.locator('#qfForm').isVisible()), 'formulário some após o sucesso');
   const events = await page.evaluate(() => Array.from(window.dataLayer || []).map(a => Array.from(a)));
   check(events.some(e => e[1] === 'generate_lead'), 'evento GA4 generate_lead disparado');
-  check(!events.some(e => e[1] === 'conversion' && String(e[2] && e[2].send_to).endsWith('/')), 'sem conversão do Ads com rótulo vazio (placeholder respeitado)');
+  check(events.some(e => e[1] === 'conversion' && e[2] && e[2].send_to === 'AW-17096585184/b8AICJ24ppMcEODfpNg_'), 'conversão do Google Ads "Submit lead form" disparada com o rótulo real (AW-17096585184/b8AICJ24ppMcEODfpNg_)');
+  check(!events.some(e => e[1] === 'conversion' && String(e[2] && e[2].send_to).endsWith('/')), 'nenhuma conversão com rótulo vazio');
   await page.screenshot({ path: 'shots/qf_m2_success.png' });
   await ctx.close();
 }

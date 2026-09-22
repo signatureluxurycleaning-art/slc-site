@@ -527,7 +527,7 @@ def patch_measurement_everywhere():
 # casa → o Raphael responde por SMS com um valor personalizado. O cliente NÃO
 # vê preço aqui. Envio vai direto ao Worker do app (POST /api/site/quote-request).
 QUOTE_API = "https://slc-app-worker.booking-f8e.workers.dev/api/site/quote-request"
-QUOTE_CONV_LABEL = ""  # rótulo da conversão "Submit lead form" do Google Ads — preencher quando obtido
+QUOTE_CONV_LABEL = "b8AICJ24ppMcEODfpNg_"  # Google Ads "Submit lead form" (AW-17096585184/b8AICJ24ppMcEODfpNg_), obtido 22/09/2026
 
 # slug da página → (id do serviço no app, frequência sugerida)
 QUOTE_SERVICE_BY_SLUG = {
@@ -815,8 +815,12 @@ def patch_quote_form():
                 continue
             t = t[:at] + "\n" + block + t[at:]
             n += 1
+        # o JS é reescrito a cada execução (rótulo do Ads, API): remove a versão
+        # anterior pelo marcador e insere a atual antes do </body>
+        js = QUOTE_JS % {"api": QUOTE_API, "label": QUOTE_CONV_LABEL}
+        t = re.sub(r"\n  <script>\n    // slc-quote-v1 —[\s\S]*?\n  </script>\n", "\n", t, count=1)
         if "slc-quote-v1 —" not in t:
-            t = t.replace("</body>", (QUOTE_JS % {"api": QUOTE_API, "label": QUOTE_CONV_LABEL}) + "</body>", 1)
+            t = t.replace("</body>", js + "</body>", 1)
         write(p, t)
     css_p = ROOT / "assets/style.css"
     css = read(css_p)
