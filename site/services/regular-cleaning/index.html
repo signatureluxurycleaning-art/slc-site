@@ -117,6 +117,79 @@
     </div>
   </section>
 
+  <!-- slc-quote-form v2: two ways to get a price — app (instant, automatic) or personalized text. No price shown here. -->
+  <section class="section qf-section" id="quote-form" data-qf-version="2" data-default-service="regular" data-default-frequency="biweekly" data-app-href="https://app.signatureluxurycleaning.com/?src=site-quote-regular-cleaning">
+    <div class="qf-wrap">
+      <div class="qf-intro">
+        <div class="qf-eyebrow">Two ways to get your price</div>
+        <h2 class="qf-title">Instant in the app, or personal by text</h2>
+        <div class="qf-app">
+          <div class="qf-app-badge">⚡ Fastest · fully automatic</div>
+          <h3 class="qf-app-title">Do it all yourself in our app</h3>
+          <ol class="qf-app-steps">
+            <li><span class="qf-step-n">1</span><span><strong>See your exact price</strong> for your home in seconds</span></li>
+            <li><span class="qf-step-n">2</span><span><strong>Pick the day and time</strong> that works for you</span></li>
+            <li><span class="qf-step-n">3</span><span><strong>Book your visit</strong> — confirmed by text, no phone call needed</span></li>
+          </ol>
+          <a class="qf-app-btn" href="https://app.signatureluxurycleaning.com/?src=site-quote-regular-cleaning" target="_blank" rel="noopener">📱 Open the App &amp; See My Price</a>
+          <div class="qf-app-fine">No download · Secure · Takes about 2 minutes</div>
+        </div>
+        <ul class="qf-points">
+          <li>Owner-operated · Bonded &amp; insured, background-checked team</li>
+          <li>5.0★ on Google · Belmont to Los Gatos</li>
+        </ul>
+      </div>
+      <form class="qf-form" id="qfForm" novalidate>
+        <div class="qf-form-head">
+          <div class="qf-form-kicker">Prefer a personal text?</div>
+          <h3 class="qf-form-title">Get a personalized price by text</h3>
+          <p class="qf-form-sub">Tell us about your home and Raphael, the owner, will text you a personalized price. No account needed.</p>
+        </div>
+        <div class="qf-grid">
+          <label class="qf-field"><span>Your name</span><input name="name" type="text" autocomplete="name" required maxlength="120" placeholder="First and last name"></label>
+          <label class="qf-field"><span>Mobile number</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="(650) 555-0123"></label>
+          <label class="qf-field"><span>ZIP code</span><input name="zip" type="text" autocomplete="postal-code" inputmode="numeric" required pattern="[0-9]{5}" maxlength="5" placeholder="94301"></label>
+          <label class="qf-field"><span>Home type</span><select name="propertyType"><option value="house">House</option><option value="apt">Apartment / condo</option></select></label>
+          <label class="qf-field qf-half"><span>Bedrooms</span><select name="bedrooms"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option value="7">7+</option></select></label>
+          <label class="qf-field qf-half"><span>Bathrooms</span><select name="bathrooms"><option>1</option><option>1.5</option><option selected>2</option><option>2.5</option><option>3</option><option>3.5</option><option>4</option><option>4.5</option><option value="5">5+</option></select></label>
+          <label class="qf-field"><span>Approx. square feet <em>(optional)</em></span><input name="sqft" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 2,400"></label>
+          <label class="qf-field"><span>Service</span><select name="service">
+            <option value="regular">Regular cleaning</option>
+            <option value="deep">Deep cleaning</option>
+            <option value="moveinout">Move-in / move-out</option>
+            <option value="postconstruction">Post-construction</option>
+            <option value="spring">Spring cleaning</option>
+            <option value="airbnb">Airbnb turnover</option>
+            <option value="whiteglove">White Glove deep clean</option>
+            <option value="personalized">Personalized (you choose rooms)</option>
+            <option value="office">Office cleaning</option>
+          </select></label>
+          <label class="qf-field"><span>How often</span><select name="frequency">
+            <option value="onetime">One-time</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="monthly">Monthly</option>
+          </select></label>
+          <label class="qf-field qf-full"><span>Anything we should know? <em>(optional)</em></span><textarea name="notes" rows="2" maxlength="1500" placeholder="Pets, preferred days, special requests…"></textarea></label>
+        </div>
+        <label class="qf-consent"><input type="checkbox" name="consent" required> <span>Text me my price at this number. One personal reply from Signature Luxury Cleaning; message &amp; data rates may apply. Reply STOP to opt out. <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy</a></span></label>
+        <div class="qf-hp" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <button type="submit" class="qf-btn">💬 Text Me My Price</button>
+        <div class="qf-error" role="alert" hidden></div>
+        <div class="qf-fine">Owner-operated · We never share your number</div>
+        <div class="qf-or"><span>or</span></div>
+        <a class="qf-applink" href="https://app.signatureluxurycleaning.com/?src=site-quote-regular-cleaning" target="_blank" rel="noopener">Skip the wait — see your price and book in the app →</a>
+      </form>
+      <div class="qf-success" id="qfSuccess" hidden>
+        <div class="qf-success-icon">✅</div>
+        <h3>Thanks, <span data-qf="firstName">there</span>!</h3>
+        <p>Raphael will text <strong data-qf="phone"></strong> shortly with your personalized price.</p>
+        <p class="qf-success-sub">Want it right now? <a href="https://app.signatureluxurycleaning.com/?src=site-quote-regular-cleaning" target="_blank" rel="noopener">See your price and book in the app →</a></p>
+      </div>
+    </div>
+  </section>
+
+
   <!-- Stats bar — no duration -->
   <section class="section" style="padding:2.5rem 2rem;background:#fff;">
     <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.5rem;text-align:center;">
@@ -326,6 +399,118 @@
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forward); else forward();
       window.addEventListener('load', fixHash);
+    })();
+  </script>
+
+  <script>
+    // slc-quote-v1 — envia o pedido de cotação ao Worker; nunca mostra preço aqui
+    (function() {
+      var API = 'https://slc-app-worker.booking-f8e.workers.dev/api/site/quote-request';
+      var CONV_LABEL = '';
+      var sec = document.getElementById('quote-form');
+      var form = document.getElementById('qfForm');
+      if (!sec || !form) return;
+      var startedAt = Date.now();
+      var byName = function(n) { return form.querySelector('[name="' + n + '"]'); };
+      // pré-seleção pela página
+      var svc = sec.getAttribute('data-default-service');
+      var freq = sec.getAttribute('data-default-frequency');
+      if (svc && byName('service').querySelector('option[value="' + svc + '"]')) byName('service').value = svc;
+      if (freq) byName('frequency').value = freq;
+      byName('service').addEventListener('change', function() {
+        byName('frequency').value = this.value === 'regular' ? 'biweekly' : 'onetime';
+      });
+      // parâmetros do anúncio (mesma chave do encaminhamento gclid)
+      function clickParams() {
+        var out = {};
+        try {
+          var q = new URLSearchParams(location.search);
+          var keys = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+          keys.forEach(function(k) { var v = q.get(k); if (v) out[k] = v.slice(0, 200); });
+          if (!Object.keys(out).length) {
+            var saved = sessionStorage.getItem('slc:click-params:v1');
+            if (saved) { var s = JSON.parse(saved); keys.forEach(function(k) { if (s[k]) out[k] = String(s[k]).slice(0, 200); }); }
+          }
+        } catch (e) {}
+        return out;
+      }
+      function showError(html) {
+        var box = form.querySelector('.qf-error');
+        box.innerHTML = html;
+        box.hidden = false;
+      }
+      function mark(name, bad) {
+        var el = byName(name); if (!el) return;
+        var field = el.closest('.qf-field'); if (field) field.classList.toggle('qf-invalid', !!bad);
+      }
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var box = form.querySelector('.qf-error'); box.hidden = true;
+        var name = byName('name').value.trim();
+        var phoneDigits = byName('phone').value.replace(/\D/g, '');
+        var zip = byName('zip').value.replace(/\D/g, '');
+        var consent = byName('consent').checked;
+        var bad = [];
+        if (name.length < 2) bad.push('name');
+        if (!(phoneDigits.length === 10 || (phoneDigits.length === 11 && phoneDigits.charAt(0) === '1'))) bad.push('phone');
+        if (!/^\d{5}$/.test(zip)) bad.push('zip');
+        ['name', 'phone', 'zip'].forEach(function(n) { mark(n, bad.indexOf(n) >= 0); });
+        if (!consent) bad.push('consent');
+        if (bad.length) {
+          showError(bad.indexOf('consent') >= 0 && bad.length === 1
+            ? 'Please check the box so we can text you back.'
+            : 'Please check the highlighted fields — we need a name, a US mobile number and a 5-digit ZIP.');
+          return;
+        }
+        var params = clickParams();
+        var payload = {
+          name: name,
+          phone: byName('phone').value.trim(),
+          zip: zip,
+          propertyType: byName('propertyType').value,
+          bedrooms: byName('bedrooms').value,
+          bathrooms: byName('bathrooms').value,
+          sqft: byName('sqft').value.replace(/[^0-9]/g, ''),
+          service: byName('service').value,
+          frequency: byName('frequency').value,
+          notes: byName('notes').value.trim(),
+          consent: true,
+          website: byName('website').value,
+          startedAt: startedAt,
+          page: location.pathname,
+          referrer: (function() { try { return document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) { return ''; } })()
+        };
+        if (!payload.sqft) delete payload.sqft;
+        if (!payload.referrer) delete payload.referrer;
+        Object.keys(params).forEach(function(k) { payload[k] = params[k]; });
+        var btn = form.querySelector('.qf-btn');
+        btn.disabled = true; btn.textContent = 'Sending…';
+        var fallback = 'Something went wrong on our side. Text us directly at <a href="sms:+16506193504?&body=' + encodeURIComponent('Hi! I\'d like a price for ' + byName('service').options[byName('service').selectedIndex].text.toLowerCase() + ' — ' + name) + '">(650) 619-3504</a> and we\'ll reply with your price.';
+        fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+          .then(function(r) { return r.json().then(function(j) { return { status: r.status, body: j }; }); })
+          .then(function(res) {
+            if (res.body && res.body.ok) {
+              var ok = document.getElementById('qfSuccess');
+              ok.querySelector('[data-qf="firstName"]').textContent = res.body.firstName || name.split(' ')[0];
+              ok.querySelector('[data-qf="phone"]').textContent = res.body.phoneDisplay || byName('phone').value;
+              form.hidden = true; ok.hidden = false;
+              try { ok.scrollIntoView({ block: 'center', behavior: 'instant' }); } catch (e) {}
+              if (typeof gtag === 'function') {
+                gtag('event', 'generate_lead', { 'event_category': 'lead', 'event_label': 'site_quote_form', 'value': 1 });
+                if (CONV_LABEL) gtag('event', 'conversion', { 'send_to': 'AW-17096585184/' + CONV_LABEL });
+              }
+              return;
+            }
+            btn.disabled = false; btn.textContent = '💬 Text Me My Price';
+            if (res.status === 429) { showError('We already have your request — Raphael will text you shortly. If it\'s urgent, call <a href="tel:+16506193504">(650) 619-3504</a>.'); return; }
+            if (res.status === 400) {
+              var f = res.body && res.body.field;
+              if (f === 'phone' || f === 'zip' || f === 'name') { mark(f, true); showError('Please double-check your ' + (f === 'zip' ? 'ZIP code' : f === 'phone' ? 'mobile number' : 'name') + '.'); return; }
+            }
+            showError(fallback);
+          })
+          .catch(function() { btn.disabled = false; btn.textContent = '💬 Text Me My Price'; showError(fallback); });
+      });
     })();
   </script>
 </body>
