@@ -28,6 +28,11 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     e na home: quem vem do anúncio deixa nome, celular e dados da casa e o
     dono responde por SMS com valor personalizado (o site NÃO mostra preço;
     o app segue exigindo cadastro antes do valor — decisão do dono).
+12. (25/09) CIDADES DO NORTE: o Google Ads passou a mirar San Mateo, Foster
+    City, Redwood Shores, Emerald Hills, Burlingame e Hillsborough, com
+    sitelinks por cidade. Cria /locations/foster-city/ (não existia — os
+    links "Foster City" caíam em /#areas), põe Redwood Shores na página de
+    Redwood City, 22 → 23 cidades em todo o site (7 línguas) e sitemap.
 
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
@@ -340,8 +345,12 @@ def patch_css():
 # ═════════════════════ 4. páginas de cidade (22) ═════════════════════════════
 
 def patch_cities():
-    cities = sorted((ROOT / "locations").iterdir())
-    for ci, cdir in enumerate(c for c in cities if c.is_dir()):
+    # cidades criadas depois do pacote v1 (passo 12) já nascem prontas e ficam
+    # FORA da enumeração: o índice ci escolhe as reviews de cada página, e uma
+    # pasta nova no meio da ordem alfabética trocaria as reviews de metade das
+    # cidades a cada execução
+    cities = sorted(c for c in (ROOT / "locations").iterdir() if c.is_dir() and c.name not in NEW_CITY_SLUGS)
+    for ci, cdir in enumerate(cities):
         slug = cdir.name
         p = cdir / "index.html"
         t = read(p)
@@ -821,6 +830,10 @@ def patch_quote_form():
         t = re.sub(r"\n  <script>\n    // slc-quote-v1 —[\s\S]*?\n  </script>\n", "\n", t, count=1)
         if "slc-quote-v1 —" not in t:
             t = t.replace("</body>", js + "</body>", 1)
+        # remover + reinserir deixava UMA linha em branco a mais por execução
+        # (o site do workflow e o zip publicado divergiam por linhas vazias):
+        # fixa em duas linhas em branco antes do script
+        t = re.sub(r"\n{3,}(  <script>\n    // slc-quote-v1 —)", "\n\n\n\\1", t, count=1)
         write(p, t)
     css_p = ROOT / "assets/style.css"
     css = read(css_p)
@@ -830,6 +843,204 @@ def patch_quote_form():
     write(css_p, css.rstrip("\n") + "\n" + QUOTE_CSS + "\n")
     log(f"formulário de cotação por SMS inserido em {n} página(s) (8 serviços + home); CSS e JS no lugar")
 
+
+
+# ═════════ 12. cidades do norte: Foster City + Redwood Shores (25/09/2026) ═══
+# O Google Ads passou a mirar os ZIPs ricos do norte (San Mateo 94402/94403,
+# Foster City 94404, Redwood Shores 94065, Burlingame/Hillsborough 94010,
+# Emerald Hills 94062) e o dono pediu sitelinks por cidade. O site não tinha
+# página de Foster City (os links "Foster City" de San Mateo e Belmont caíam
+# em /#areas) e a página de Redwood City não citava Redwood Shores.
+#   (a) /locations/foster-city/ nasce do molde de San Mateo (mesma estrutura,
+#       medição e formulários), com dados próprios: bairros e marcos (Sea
+#       Colony, Treasure Isle, Isle Cove, Marina Point, Edgewater; Leo J. Ryan
+#       Park, lagoa, Sea Cloud Park, Edgewater Place), ZIP 94404, população do
+#       Censo 2020 (33,805), valor típico de casa (Zillow ago/2026 ≈ $1.8M),
+#       coordenadas, e 3 reviews reais diferentes das de San Mateo;
+#   (b) Redwood City: Redwood Shores + Emerald Hills no badge, meta, bairros,
+#       FAQ e ZIPs 94061/94062/94063/94065;
+#   (c) links "Foster City" das páginas de cidade → página nova;
+#   (d) home: pill na grade de áreas, schema areaServed, lista do SMS;
+#       contagem 22 → 23 cidades no index e nas 7 línguas; FAQ "What areas
+#       do you serve?" passa a citar o corredor da Península (antes citava
+#       San Jose e Fremont);
+#   (e) sitemap.xml: URL nova + lastmod das páginas tocadas.
+
+NEW_CITY_SLUGS = ("foster-city",)
+STEP12_DATE = "2026-09-25"
+SITE_URL = "https://signatureluxurycleaning.com"
+
+FC_LINK_RE = re.compile(r'<a href="/#areas"((?: class="[^"]*")?)>((?:<span class="nearby-icon">📍</span>)?(?:<span>)?Foster City<)')
+
+AREAS_FAQ_SCHEMA = ("We serve 23 cities across the Peninsula and Silicon Valley, including Palo Alto, Menlo Park, "
+                    "Atherton, Los Altos, San Mateo, Hillsborough, Burlingame, Foster City, Redwood City and Belmont.")
+AREAS_FAQ_HTML = ("We serve 23 cities across the Peninsula and Silicon Valley: Palo Alto, Menlo Park, Atherton, "
+                  "Los Altos, San Mateo, Hillsborough, Burlingame, Foster City, Redwood City, Belmont and more.")
+
+TR_COUNT_SWAPS = [("22 cities", "23 cities"), ("22个城市", "23个城市"), ("22 शहरों", "23 शहरों"),
+                  ("22 lungsod", "23 lungsod"), ("22 thành phố", "23 thành phố"), ("22개 도시", "23개 도시"),
+                  ("22都市", "23都市")]
+
+
+def once(text, old, new, where, expect=1):
+    """Troca exigindo `expect` ocorrências; se `new` já está no texto, não mexe (idempotência)."""
+    if new in text:
+        return text
+    return sub_count(text, old, new, expect, where)
+
+
+def review_card(name, text):
+    return ('<div class="review-card">\n          <div class="review-stars">★★★★★</div>\n'
+            f'          <p>"{text}"</p>\n'
+            f'          <div class="review-author">— {name}, Silicon Valley · Google review</div>\n        </div>')
+
+
+def build_foster_city(sm):
+    """Página de Foster City a partir da de San Mateo (que já tem o pacote v1 inteiro)."""
+    w = "foster-city (molde San Mateo)"
+    county = "\x00COUNTY\x00"
+    t = sm.replace("San Mateo County", county)
+    t = t.replace("San Mateo", "Foster City").replace("san-mateo", "foster-city")
+    t = t.replace(county, "San Mateo County")
+    pairs = [
+        ('"postalCode": "94401"', '"postalCode": "94404"', 1),
+        ('"latitude": 37.563,', '"latitude": 37.5514,', 2),
+        ('"longitude": -122.3255', '"longitude": -122.2664', 2),
+        ("Signature+Luxury+Cleaning+san+mateo+CA", "Signature+Luxury+Cleaning+foster+city+CA", 1),
+        ("Serving Downtown, Baywood, Hillsdale, Beresford, Fiesta Gardens and surrounding areas.",
+         "Serving Sea Colony, Treasure Isle, Isle Cove, Marina Point, Edgewater and surrounding areas.", 1),
+        ("Median home value in Foster City is $1.9M.", "Median home value in Foster City is $1.8M.", 2),
+        ("Yes! We serve all neighborhoods including Hillsdale, Foster City Park, Baywood and more. ZIP: 94401.",
+         "Yes! We serve all neighborhoods including Sea Colony, Treasure Isle, Isle Cove and more. ZIP: 94404.", 2),
+        ("We serve all neighborhoods in Foster City — including Downtown, Baywood, Hillsdale, Beresford, Fiesta Gardens.",
+         "We serve all neighborhoods in Foster City — including Sea Colony, Treasure Isle, Isle Cove, Marina Point, Edgewater.", 1),
+        ("work long hours in Peninsula", "work long hours on the Peninsula", 1),
+        ("We also serve families in Burlingame, Foster City, Redwood City and across San Mateo County.",
+         "We also serve families in San Mateo, Belmont, Redwood City and across San Mateo County.", 1),
+        ('<a href="/locations/burlingame/" class="nearby-card"><span class="nearby-icon">📍</span><span>Burlingame</span></a>'
+         '<a href="/#areas" class="nearby-card"><span class="nearby-icon">📍</span><span>Foster City</span></a>',
+         '<a href="/locations/san-mateo/" class="nearby-card"><span class="nearby-icon">📍</span><span>San Mateo</span></a>'
+         '<a href="/locations/belmont/" class="nearby-card"><span class="nearby-icon">📍</span><span>Belmont</span></a>', 1),
+        ("Foster City's diverse housing means we bring the right approach to every home.",
+         "Foster City's lagoon-front homes and waterside townhomes deserve steady, detail-oriented care.", 1),
+        ('<span class="city-stat-number">105,661</span>', '<span class="city-stat-number">33,805</span>', 1),
+        ('<span class="city-stat-number">$1.9M</span>', '<span class="city-stat-number">$1.8M</span>', 1),
+        ('<span class="neighborhood-pill">Hillsdale</span><span class="neighborhood-pill">Foster City Park</span>'
+         '<span class="neighborhood-pill">Baywood</span><span class="neighborhood-pill">Aragon</span>'
+         '<span class="neighborhood-pill">Fiesta Gardens</span>',
+         '<span class="neighborhood-pill">Sea Colony</span><span class="neighborhood-pill">Treasure Isle</span>'
+         '<span class="neighborhood-pill">Isle Cove</span><span class="neighborhood-pill">Marina Point</span>'
+         '<span class="neighborhood-pill">Edgewater</span>', 1),
+        ('<ul class="landmarks-list"><li>Hillsdale Shopping Center</li><li>Central Park</li><li>Japanese Garden</li><li>Coyote Point</li></ul>',
+         '<ul class="landmarks-list"><li>Leo J. Ryan Park</li><li>Foster City Lagoon</li><li>Sea Cloud Park</li><li>Edgewater Place</li></ul>', 1),
+        ('<a href="/locations/burlingame/" class="nearby-link">Burlingame</a> <a href="/locations/belmont/" class="nearby-link">Belmont</a> '
+         '<a href="/#areas" class="nearby-link">Foster City</a> ',
+         '<a href="/locations/san-mateo/" class="nearby-link">San Mateo</a> <a href="/locations/belmont/" class="nearby-link">Belmont</a> '
+         '<a href="/locations/redwood-city/" class="nearby-link">Redwood City</a> ', 1),
+        ('<li><a href="/locations/burlingame/">Burlingame</a></li><li><a href="/#areas">Foster City</a></li>',
+         '<li><a href="/locations/san-mateo/">San Mateo</a></li><li><a href="/locations/belmont/">Belmont</a></li>', 1),
+    ]
+    for old, new, n in pairs:
+        t = sub_count(t, old, new, n, w)
+    # 3 reviews reais diferentes das de San Mateo (lá: Mia, Danillo R., Alday C.)
+    blocks = re.findall(r'<div class="review-card">.*?</div>\s*</div>', t, re.S)
+    if len(blocks) != 3:
+        fail(f"{w}: esperava 3 reviews no molde, achei {len(blocks)}")
+    else:
+        for (name, text), old in zip([REAL_REVIEWS[i] for i in (0, 2, 4)], blocks):
+            t = t.replace(old, review_card(name, text), 1)
+    return t
+
+
+def patch_redwood_city(t):
+    w = "redwood-city (passo 12)"
+    t = once(t, 'content="Professional house cleaning in Redwood City, CA. Signature Luxury Cleaning serves',
+             'content="Professional house cleaning in Redwood City, CA, including Redwood Shores and Emerald Hills. Signature Luxury Cleaning serves', w)
+    t = once(t, "Serving Downtown, Emerald Hills, Farm Hill, Edgewood, Woodside Plaza and surrounding areas.",
+             "Serving Redwood Shores, Emerald Hills, Downtown, Farm Hill, Edgewood, Woodside Plaza and surrounding areas.", w)
+    t = once(t, "Yes! We serve all neighborhoods including Downtown Redwood City, Emerald Hills, Woodside Plaza and more. ZIP: 94061.",
+             "Yes! We serve all neighborhoods including Redwood Shores, Emerald Hills, Downtown Redwood City, Woodside Plaza and more. "
+             "ZIPs: 94061, 94062, 94063 and 94065.", w, 2)
+    t = once(t, '<div class="hero-badge">📍 Serving Redwood City, San Mateo County</div>',
+             '<div class="hero-badge">📍 Serving Redwood City, Redwood Shores &amp; Emerald Hills</div>', w)
+    t = once(t, "We serve all neighborhoods in Redwood City — including Downtown, Emerald Hills, Farm Hill, Edgewood, Woodside Plaza.",
+             "We serve all neighborhoods in Redwood City — including Redwood Shores, Emerald Hills, Downtown, Farm Hill, Edgewood, Woodside Plaza.", w)
+    t = once(t, "Redwood City's revitalized downtown and Emerald Hills luxury homes create a unique mix.",
+             "Redwood City's revitalized downtown, the waterfront homes of Redwood Shores and the hillside homes of Emerald Hills create a unique mix.", w)
+    t = once(t, '<div class="neighborhoods-grid"><span class="neighborhood-pill">Downtown Redwood City</span>',
+             '<div class="neighborhoods-grid"><span class="neighborhood-pill">Redwood Shores</span><span class="neighborhood-pill">Downtown Redwood City</span>', w)
+    return t
+
+
+def patch_home_step12(t):
+    w = "index (passo 12)"
+    pill_hb = '<a href="locations/hillsborough/" class="area-pill" title="House Cleaning Hillsborough CA">Hillsborough</a>\n'
+    pill_fc = '          <a href="locations/foster-city/" class="area-pill" title="House Cleaning Foster City CA">Foster City</a>\n'
+    t = once(t, pill_hb, pill_hb + pill_fc, w)
+    t = once(t, '{"@type": "City", "name": "Hillsborough"}\n    ],',
+             '{"@type": "City", "name": "Hillsborough"},\n      {"@type": "City", "name": "Foster City"}\n    ],', w)
+    t = once(t, "'Burlingame','Hillsborough'];", "'Burlingame','Hillsborough','Foster City'];", w)
+    t = sub_count(t, "22 cities", "23 cities", 7, w)
+    t = sub_count(t, '<span class="number">22</span>', '<span class="number">23</span>', 1, w)
+    t = sub_count(t, "All 22 service areas", "All 23 service areas", 1, w)
+    t = once(t, "We serve 23 cities across the San Francisco Bay Area including San Jose, Palo Alto, Mountain View, Cupertino, Sunnyvale, and more.",
+             AREAS_FAQ_SCHEMA, w)
+    t = once(t, "We serve 23 cities across the Bay Area: San Jose, Palo Alto, Mountain View, Cupertino, Sunnyvale, Fremont, and more.",
+             AREAS_FAQ_HTML, w)
+    return t
+
+
+def patch_sitemap_step12(t):
+    fc_url = f"{SITE_URL}/locations/foster-city/"
+    if fc_url not in t:
+        m = re.search(r"  <url>\n    <loc>%s/locations/hillsborough/</loc>\n[\s\S]*?</url>\n" % re.escape(SITE_URL), t)
+        if not m:
+            fail("sitemap.xml: bloco de hillsborough não encontrado")
+            return t
+        block = (f"  <url>\n    <loc>{fc_url}</loc>\n    <lastmod>{STEP12_DATE}</lastmod>\n"
+                 "    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n")
+        t = t[:m.end()] + block + t[m.end():]
+    for path in ("/", "/locations/redwood-city/", "/locations/san-mateo/", "/locations/belmont/"):
+        t, n = re.subn(r"(<loc>%s</loc>\s*<lastmod>)[^<]*(</lastmod>)" % re.escape(SITE_URL + path),
+                       r"\g<1>%s\g<2>" % STEP12_DATE, t)
+        if n != 1:
+            fail(f"sitemap.xml: esperava 1 entrada com lastmod para {path}, achei {n}")
+    return t
+
+
+def patch_step12():
+    loc = ROOT / "locations"
+    fc_p = loc / "foster-city" / "index.html"
+    if fc_p.exists():
+        log("foster-city: página já existe — mantida (idempotência)")
+    else:
+        fc_p.parent.mkdir(parents=True, exist_ok=True)
+        write(fc_p, build_foster_city(read(loc / "san-mateo" / "index.html")))
+        log("foster-city: página criada a partir do molde de San Mateo (dados próprios)")
+
+    rc_p = loc / "redwood-city" / "index.html"
+    write(rc_p, patch_redwood_city(read(rc_p)))
+
+    n_links = 0
+    for p in sorted(loc.glob("*/index.html")):
+        t = read(p)
+        t2 = FC_LINK_RE.sub(r'<a href="/locations/foster-city/"\1>\2', t)
+        if t2 != t:
+            n_links += len(FC_LINK_RE.findall(t))
+            write(p, t2)
+
+    idx_p = ROOT / "index.html"
+    write(idx_p, patch_home_step12(read(idx_p)))
+
+    tr_p = ROOT / "assets/translations.js"
+    tr = read(tr_p)
+    for old, new in TR_COUNT_SWAPS:
+        tr = sub_count(tr, old, new, 3, "translations.js (22→23)")
+    write(tr_p, tr)
+
+    sm_p = ROOT / "sitemap.xml"
+    write(sm_p, patch_sitemap_step12(read(sm_p)))
+    log(f"passo 12: Foster City + Redwood Shores; {n_links} link(s) 'Foster City' → página nova; 23 cidades (7 línguas); sitemap")
 
 
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
@@ -923,7 +1134,8 @@ def verify():
     check("'ja'];" in tr.replace('"', "'"), "SUPPORTED_LANGS com ja")
     check("ja: {" in tr, "dicionário ja presente")
     check("eight services" in tr and "八项服务" in tr and "8가지 서비스" in tr, "aeo_services corrigido en/zh/ko")
-    check("22 cities" in tr and "22개 도시" in tr, "contagem 22 nas traduções")
+    stale_tr = [old for old, _new in TR_COUNT_SWAPS if old in tr]
+    check("23 cities" in tr and "23개 도시" in tr and not stale_tr, f"contagem 23 nas traduções (restam: {stale_tr})")
     check("top: 132px" in css, "badge 5.0 reposicionado")
     check(".ba-strip" in css, "CSS do before/after")
     for f in ["404.html", "robots.txt", ".htaccess"]:
@@ -963,6 +1175,45 @@ def verify():
     leak = [str(p.relative_to(ROOT)) for p in qf_pages if "qf-section" in read(p) and re.search(r'qf-[a-z]+[^<]*\$\d', read(p))]
     check(not leak, f"o formulário não mostra preço nenhum ({leak[:3]})")
 
+    # passo 12 — cidades do norte
+    fc_p = ROOT / "locations/foster-city/index.html"
+    check(fc_p.exists(), "página /locations/foster-city/ existe")
+    if fc_p.exists():
+        fc = read(fc_p)
+        check("<title>House Cleaning Foster City CA | Signature Luxury Cleaning</title>" in fc, "Foster City: título")
+        check(f'<link rel="canonical" href="{SITE_URL}/locations/foster-city/">' in fc, "Foster City: canonical próprio")
+        sobras = [s for s in ("Hillsdale", "Baywood", "Fiesta Gardens", "94401", "105,661", "site-san-mateo",
+                              "Foster City Park", "Foster City County", "Coyote Point", "san+mateo", "37.563,") if s in fc]
+        check(not sobras, f"Foster City: nada de San Mateo sobrando ({sobras})")
+        check(fc.count("San Mateo County") >= 3 and 'href="/locations/san-mateo/"' in fc, "Foster City: condado certo + link para San Mateo")
+        n_src = fc.count("?src=site-foster-city")
+        check(n_src >= 1, f"Foster City: links do app com origem própria ({n_src})")
+        check(all(s in fc for s in ("94404", "33,805", "Sea Colony", "Leo J. Ryan Park", "37.5514")),
+              "Foster City: dados próprios (ZIP, população, bairros, marcos, coordenadas)")
+        check("— Mia," not in fc and "— Harshita S.," in fc and fc.count('class="review-card"') == 3,
+              "Foster City: 3 reviews reais, diferentes das de San Mateo")
+        check(fc.count("<html") == 1 and fc.count("</html>") == 1 and fc.count("<body") == 1, "Foster City: HTML inteiro (1 html/body)")
+    rc = read(ROOT / "locations/redwood-city/index.html")
+    n_rs = rc.count("Redwood Shores")
+    check(n_rs >= 7 and "94065" in rc, f"Redwood City cita Redwood Shores ({n_rs}x) e o ZIP 94065")
+    stale_fc = [str(p.relative_to(ROOT)) for p in (ROOT / "locations").rglob("*.html")
+                if re.search(r'href="/#areas"[^>]*>(?:<span[^>]*>📍</span>)?(?:<span>)?Foster City', read(p))]
+    check(not stale_fc, f"nenhum link 'Foster City' caindo em /#areas ({stale_fc})")
+    pills = re.findall(r'href="locations/([a-z-]+)/" class="area-pill"', idx)
+    sem_pagina = [s for s in pills if not (ROOT / "locations" / s / "index.html").exists()]
+    check(len(pills) == 23 and len(set(pills)) == 23 and not sem_pagina, f"home: 23 cidades na grade, todas com página ({len(pills)}; sem página: {sem_pagina})")
+    check("22 cities" not in idx and '<span class="number">23</span>' in idx and "All 23 service areas" in idx, "home: contagem 23 em todo o index")
+    check(AREAS_FAQ_SCHEMA in idx and AREAS_FAQ_HTML in idx, "home: FAQ de áreas cita o corredor da Península")
+    check('"name": "Foster City"' in idx and "'Foster City']" in idx, "home: Foster City no schema e na lista do SMS")
+    sm = read(ROOT / "sitemap.xml")
+    import xml.etree.ElementTree as ET
+    try:
+        ET.fromstring(sm.encode("utf-8"))
+        sm_ok = True
+    except ET.ParseError:
+        sm_ok = False
+    check(sm_ok and f"{SITE_URL}/locations/foster-city/" in sm and sm.count("<url>") == 32, f"sitemap válido com a página nova ({sm.count('<url>')} URLs)")
+
     # dicionário ja cobre todas as chaves usadas no index
     keys = set(re.findall(r'data-i18n="([^"]+)"', idx))
     ja_keys = set(re.findall(r'^\s{4}(\w+):', tr[tr.index("ja: {"):], re.M))
@@ -987,6 +1238,7 @@ def main():
     add_new_files()
     patch_measurement_everywhere()  # depois do 404.html, que é reescrito acima
     patch_quote_form()
+    patch_step12()  # por último: a página nova nasce da de San Mateo já completa
 
     print("── mudanças ──")
     for c in CHANGES:

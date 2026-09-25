@@ -35,7 +35,8 @@ await page.waitForTimeout(500);
 const hrefs = await page.$$eval('a[href*="app.signatureluxurycleaning.com"]', as => as.map(a => a.getAttribute('href')));
 check(hrefs.length >= 3, `página de serviço tem links para o app (${hrefs.length})`);
 check(hrefs.every(h => h.includes('gclid=TESTGCLID123')), 'TODOS os links do app levam o gclid');
-check(hrefs.every(h => h.includes('src=site-svc-regular-cleaning')), 'o ?src original foi preservado');
+// desde a v1.3 o bloco do formulário tem links próprios (?src=site-quote-...) — os dois valem
+check(hrefs.every(h => /src=site-(svc|quote)-regular-cleaning/.test(h)), 'o ?src original foi preservado');
 check(hrefs.every(h => h.includes('utm_campaign=peninsula')), 'utm_campaign também viaja');
 // clique no primeiro link do app sem sair da página
 await page.$eval('a[href*="app.signatureluxurycleaning.com"]', a => { a.addEventListener('click', e => e.preventDefault()); a.click(); });
@@ -74,7 +75,7 @@ const p3 = await ctx.newPage();
 await p3.goto('http://localhost:8789/services/deep-cleaning/', { waitUntil: 'load' });
 await p3.waitForTimeout(400);
 const clean = await p3.$$eval('a[href*="app.signatureluxurycleaning.com"]', as => as.map(a => a.getAttribute('href')));
-check(clean.every(h => !h.includes('gclid') && h.includes('?src=site-svc-deep-cleaning')), 'visita sem anúncio: links intactos');
+check(clean.every(h => !h.includes('gclid') && /\?src=site-(svc|quote)-deep-cleaning/.test(h)), 'visita sem anúncio: links intactos');
 
 await browser.close();
 server.close();
