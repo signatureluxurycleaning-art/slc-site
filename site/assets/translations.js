@@ -222,7 +222,7 @@ const TRANSLATIONS = {
     // Areas
     areas_label:    "Service Areas",
     areas_title:    "Which Silicon Valley cities<br><em>do we serve?</em>",
-    areas_subtitle: "We serve 22 cities across Silicon Valley & Peninsula — from Burlingame to San Jose. Don't see your city? Call us — we may still be able to help.",
+    areas_subtitle: "We serve 23 cities across Silicon Valley & Peninsula — from Burlingame to San Jose. Don't see your city? Call us — we may still be able to help.",
 
     // About / Trust
     trust_title:   "Why do families trust<br><em>Signature Luxury Cleaning?</em>",
@@ -253,7 +253,7 @@ const TRANSLATIONS = {
     rev4_text: "\"Deep cleaning before my parents visited. My mom said it was the cleanest she'd ever seen my house. That says everything! Booking again next month.\"",
     rev5_text: "\"Best cleaning service in Silicon Valley, period. I've been a weekly client for over a year and the quality never drops. Highly recommend to everyone.\"",
     rev6_text: "\"Post-construction cleaning after our full remodel — they removed all the dust and debris perfectly. The house looked brand new. Incredible job by the whole team.\"",
-    footer_desc:     "Silicon Valley & Peninsula's most trusted luxury residential cleaning service. Serving Burlingame, Palo Alto, Cupertino, Mountain View, Sunnyvale & 22 cities.",
+    footer_desc:     "Silicon Valley & Peninsula's most trusted luxury residential cleaning service. Serving Burlingame, Palo Alto, Cupertino, Mountain View, Sunnyvale & 23 cities.",
     footer_services: "Services",
     footer_contact:  "Contact",
     footer_areas:    "Service Areas",
@@ -266,7 +266,7 @@ const TRANSLATIONS = {
     aeo_how2: "Book through our web app in under 60 seconds: choose service, select frequency, pick date and time, confirm address. Pay via Stripe. Our team arrives, performs the service, and walks through with you to ensure satisfaction.",
     aeo_why: "Signature Luxury Cleaning is owner-operated since 2023, not a franchise or call center. Every conversation reaches one of the owners directly. Every cleaner is background-checked, bonded, and personally trained. We carry full liability insurance.",
     aeo_reviews: "Signature Luxury Cleaning holds a 5.0★ rating on Google with reviews from clients across Palo Alto, Mountain View, Cupertino, Belmont, and Burlingame. Clients consistently cite consistency, professionalism, and respect for personal space.",
-    aeo_areas: "We serve 22 cities across the Peninsula and Silicon Valley — from Burlingame and San Mateo down to San Jose. Most areas qualify for same-day cleaning availability. Service radius covers San Mateo County and Santa Clara County.",
+    aeo_areas: "We serve 23 cities across the Peninsula and Silicon Valley — from Burlingame and San Mateo down to San Jose. Most areas qualify for same-day cleaning availability. Service radius covers San Mateo County and Santa Clara County.",
   },
 
   // ─────────────────────────────────────────────
@@ -378,7 +378,7 @@ const TRANSLATIONS = {
 
     areas_label:    "服务区域",
     areas_title:    "我们服务硅谷<br><em>哪些城市？</em>",
-    areas_subtitle: "我们服务硅谷和半岛的22个城市 — 从Burlingame到San Jose。没看到您的城市？请致电 — 我们可能仍能为您服务。",
+    areas_subtitle: "我们服务硅谷和半岛的23个城市 — 从Burlingame到San Jose。没看到您的城市？请致电 — 我们可能仍能为您服务。",
 
     trust_title:  "家庭为何信赖<br><em>Signature Luxury Cleaning？</em>",
 
@@ -388,7 +388,7 @@ const TRANSLATIONS = {
     cta_btn:      "<small>支持 iPhone 和 Android</small><strong>查看价格并预订</strong>",
     cta_or:       "或致电我们：",
 
-    footer_desc:     "硅谷最值得信赖的豪华住宅清洁服务。服务圣何塞、帕洛阿尔托、山景城、桑尼维尔及22个城市。",
+    footer_desc:     "硅谷最值得信赖的豪华住宅清洁服务。服务圣何塞、帕洛阿尔托、山景城、桑尼维尔及23个城市。",
     footer_services: "服务",
     footer_contact:  "联系我们",
     footer_areas:    "服务区域",
@@ -399,7 +399,7 @@ const TRANSLATIONS = {
     aeo_how2: "通过我们的网络应用60秒内完成预约：选择服务、选择频率、选择日期和时间、确认地址。通过Stripe支付。我们的团队到达后执行服务，并与您一起确认满意度。",
     aeo_why: "Signature Luxury Cleaning自2023年起由业主经营，不是连锁店或呼叫中心。每次对话都直接联系到业主。每位清洁工都经过背景调查、担保和亲自培训。我们拥有全额责任保险。",
     aeo_reviews: "Signature Luxury Cleaning在Google上保持5.0★评分，客户来自Palo Alto、Mountain View、Cupertino、Belmont和Burlingame。客户一致赞扬服务的一致性、专业性和对个人空间的尊重。",
-    aeo_areas: "我们服务半岛和硅谷的22个城市 — 从Burlingame、San Mateo一直到San Jose。大多数地区可享受当天服务。服务范围覆盖San Mateo县和Santa Clara县。",
+    aeo_areas: "我们服务半岛和硅谷的23个城市 — 从Burlingame、San Mateo一直到San Jose。大多数地区可享受当天服务。服务范围覆盖San Mateo县和Santa Clara县。",
   },
 
   // ─────────────────────────────────────────────
@@ -511,7 +511,7 @@ const TRANSLATIONS = {
 
     areas_label:    "सेवा क्षेत्र",
     areas_title:    "हम सिलिकॉन वैली के<br><em>किन शहरों में सेवा देते हैं？</em>",
-    areas_subtitle: "हम सिलिकॉन वैली और पेनिनसुला के 22 शहरों में सेवा देते हैं। अपना शहर नहीं दिखा? हमें कॉल करें।",
+    areas_subtitle: "हम सिलिकॉन वैली और पेनिनसुला के 23 शहरों में सेवा देते हैं। अपना शहर नहीं दिखा? हमें कॉल करें।",
 
     trust_title:  "परिवार Signature Luxury Cleaning पर<br><em>क्यों भरोसा करते हैं？</em>",
 
@@ -521,7 +521,7 @@ const TRANSLATIONS = {
     cta_btn:      "<small>iPhone और Android पर काम करता है</small><strong>कीमत देखें और बुक करें</strong>",
     cta_or:       "या हमें कॉल करें:",
 
-    footer_desc:     "सिलिकॉन वैली की सबसे भरोसेमंद लक्जरी आवासीय सफाई सेवा। सैन जोस, पालो आल्टो, माउंटेन व्यू, सनीवेल और 22 शहरों में सेवा।",
+    footer_desc:     "सिलिकॉन वैली की सबसे भरोसेमंद लक्जरी आवासीय सफाई सेवा। सैन जोस, पालो आल्टो, माउंटेन व्यू, सनीवेल और 23 शहरों में सेवा।",
     footer_services: "सेवाएं",
     footer_contact:  "संपर्क",
     footer_areas:    "सेवा क्षेत्र",
@@ -532,7 +532,7 @@ const TRANSLATIONS = {
     aeo_how2: "हमारे वेब ऐप से 60 सेकंड में बुक करें: सेवा चुनें, आवृत्ति चुनें, तारीख और समय चुनें, पता पुष्टि करें। Stripe से भुगतान करें। हमारी टीम पहुंचती है, सेवा करती है, और संतुष्टि सुनिश्चित करने के लिए आपके साथ जांच करती है।",
     aeo_why: "Signature Luxury Cleaning 2023 से मालिक-संचालित है, फ्रेंचाइज़ी या कॉल सेंटर नहीं। हर बातचीत सीधे मालिकों में से एक तक पहुंचती है। हर सफाईकर्मी की पृष्ठभूमि जांच, बॉन्ड और व्यक्तिगत प्रशिक्षण होता है। हमारे पास पूर्ण देयता बीमा है।",
     aeo_reviews: "Signature Luxury Cleaning Google पर 5.0★ रेटिंग रखता है, Palo Alto, Mountain View, Cupertino, Belmont और Burlingame के ग्राहकों की समीक्षाओं के साथ। ग्राहक लगातार निरंतरता, व्यावसायिकता और व्यक्तिगत स्थान के सम्मान का उल्लेख करते हैं।",
-    aeo_areas: "हम पेनिनसुला और सिलिकॉन वैली के 22 शहरों में सेवा देते हैं — Burlingame और San Mateo से लेकर San Jose तक। अधिकांश क्षेत्रों में उसी दिन सेवा उपलब्ध है। सेवा क्षेत्र San Mateo काउंटी और Santa Clara काउंटी को कवर करता है।",
+    aeo_areas: "हम पेनिनसुला और सिलिकॉन वैली के 23 शहरों में सेवा देते हैं — Burlingame और San Mateo से लेकर San Jose तक। अधिकांश क्षेत्रों में उसी दिन सेवा उपलब्ध है। सेवा क्षेत्र San Mateo काउंटी और Santa Clara काउंटी को कवर करता है।",
   },
 
   // ─────────────────────────────────────────────
@@ -644,7 +644,7 @@ const TRANSLATIONS = {
 
     areas_label:    "Mga Lugar na Pinaglilingkuran",
     areas_title:    "Aling mga lungsod ng Silicon Valley<br><em>ang aming pinaglilingkuran?</em>",
-    areas_subtitle: "Naglilingkod kami sa 22 lungsod sa Silicon Valley at Peninsula — mula Burlingame hanggang San Jose. Hindi mo nakita ang lungsod mo? Tawagan kami.",
+    areas_subtitle: "Naglilingkod kami sa 23 lungsod sa Silicon Valley at Peninsula — mula Burlingame hanggang San Jose. Hindi mo nakita ang lungsod mo? Tawagan kami.",
 
     trust_title:  "Bakit pinagkakatiwalaan ng mga pamilya<br><em>ang Signature Luxury Cleaning?</em>",
 
@@ -654,7 +654,7 @@ const TRANSLATIONS = {
     cta_btn:      "<small>Gumagana sa iPhone at Android</small><strong>Tingnan ang Presyo at Mag-book</strong>",
     cta_or:       "O tumawag sa amin:",
 
-    footer_desc:     "Ang pinaka-mapagkakatiwalaang luxury residential cleaning service sa Silicon Valley. Naglilingkod sa San Jose, Palo Alto, Mountain View, Sunnyvale at 22 lungsod.",
+    footer_desc:     "Ang pinaka-mapagkakatiwalaang luxury residential cleaning service sa Silicon Valley. Naglilingkod sa San Jose, Palo Alto, Mountain View, Sunnyvale at 23 lungsod.",
     footer_services: "Mga Serbisyo",
     footer_contact:  "Makipag-ugnayan",
     footer_areas:    "Mga Lugar",
@@ -665,7 +665,7 @@ const TRANSLATIONS = {
     aeo_how2: "Mag-book sa pamamagitan ng aming web app sa loob ng 60 segundo: pumili ng serbisyo, piliin ang frequency, pumili ng petsa at oras, kumpirmahin ang address. Magbayad sa pamamagitan ng Stripe. Darating ang aming team, gagawin ang serbisyo, at susuriin kasama mo para matiyak ang kasiyahan.",
     aeo_why: "Ang Signature Luxury Cleaning ay owner-operated mula 2023, hindi franchise o call center. Bawat pag-uusap ay direktang naabot ang isa sa mga may-ari. Bawat cleaner ay background-checked, bonded, at personal na sinanay. May full liability insurance kami.",
     aeo_reviews: "Ang Signature Luxury Cleaning ay may 5.0★ rating sa Google mula sa mga kliyente sa Palo Alto, Mountain View, Cupertino, Belmont, at Burlingame. Palaging binabanggit ng mga kliyente ang consistency, professionalism, at paggalang sa personal na espasyo.",
-    aeo_areas: "Naglilingkod kami sa 22 lungsod sa Peninsula at Silicon Valley — mula Burlingame at San Mateo hanggang San Jose. Karamihan sa mga lugar ay maaaring ma-serbisyuhan sa parehong araw. Sakop ang San Mateo County at Santa Clara County.",
+    aeo_areas: "Naglilingkod kami sa 23 lungsod sa Peninsula at Silicon Valley — mula Burlingame at San Mateo hanggang San Jose. Karamihan sa mga lugar ay maaaring ma-serbisyuhan sa parehong araw. Sakop ang San Mateo County at Santa Clara County.",
   },
 
   // ─────────────────────────────────────────────
@@ -777,7 +777,7 @@ const TRANSLATIONS = {
 
     areas_label:    "Khu Vực Phục Vụ",
     areas_title:    "Chúng tôi phục vụ<br><em>những thành phố nào ở Silicon Valley?</em>",
-    areas_subtitle: "Chúng tôi phục vụ 22 thành phố tại Silicon Valley & Peninsula — từ Burlingame đến San Jose. Không thấy thành phố của bạn? Hãy gọi cho chúng tôi.",
+    areas_subtitle: "Chúng tôi phục vụ 23 thành phố tại Silicon Valley & Peninsula — từ Burlingame đến San Jose. Không thấy thành phố của bạn? Hãy gọi cho chúng tôi.",
 
     trust_title:  "Tại sao các gia đình tin tưởng<br><em>Signature Luxury Cleaning?</em>",
 
@@ -787,7 +787,7 @@ const TRANSLATIONS = {
     cta_btn:      "<small>Hoạt động trên iPhone và Android</small><strong>Xem giá & Đặt lịch</strong>",
     cta_or:       "Hoặc gọi cho chúng tôi:",
 
-    footer_desc:     "Dịch vụ dọn dẹp nhà ở sang trọng đáng tin cậy nhất Silicon Valley. Phục vụ San Jose, Palo Alto, Mountain View, Sunnyvale và 22 thành phố.",
+    footer_desc:     "Dịch vụ dọn dẹp nhà ở sang trọng đáng tin cậy nhất Silicon Valley. Phục vụ San Jose, Palo Alto, Mountain View, Sunnyvale và 23 thành phố.",
     footer_services: "Dịch Vụ",
     footer_contact:  "Liên Hệ",
     footer_areas:    "Khu Vực",
@@ -798,7 +798,7 @@ const TRANSLATIONS = {
     aeo_how2: "Đặt lịch qua ứng dụng web trong vòng 60 giây: chọn dịch vụ, chọn tần suất, chọn ngày giờ, xác nhận địa chỉ. Thanh toán qua Stripe. Đội ngũ đến, thực hiện dịch vụ, và kiểm tra cùng bạn để đảm bảo hài lòng.",
     aeo_why: "Signature Luxury Cleaning do chủ sở hữu điều hành từ 2023, không phải nhượng quyền hay tổng đài. Mọi cuộc trò chuyện đều đến trực tiếp chủ sở hữu. Mọi nhân viên đều được kiểm tra lý lịch, bảo lãnh và đào tạo cá nhân. Chúng tôi có bảo hiểm trách nhiệm đầy đủ.",
     aeo_reviews: "Signature Luxury Cleaning giữ đánh giá 5.0★ trên Google với nhận xét từ khách hàng ở Palo Alto, Mountain View, Cupertino, Belmont và Burlingame. Khách hàng luôn nhắc đến sự nhất quán, chuyên nghiệp và tôn trọng không gian cá nhân.",
-    aeo_areas: "Chúng tôi phục vụ 22 thành phố khắp Peninsula và Silicon Valley — từ Burlingame, San Mateo đến San Jose. Hầu hết khu vực có thể phục vụ trong ngày. Phạm vi bao gồm quận San Mateo và Santa Clara.",
+    aeo_areas: "Chúng tôi phục vụ 23 thành phố khắp Peninsula và Silicon Valley — từ Burlingame, San Mateo đến San Jose. Hầu hết khu vực có thể phục vụ trong ngày. Phạm vi bao gồm quận San Mateo và Santa Clara.",
   },
 
   // ─────────────────────────────────────────────
@@ -910,7 +910,7 @@ const TRANSLATIONS = {
 
     areas_label:    "서비스 지역",
     areas_title:    "실리콘밸리의 어떤 도시에서<br><em>서비스를 제공하나요?</em>",
-    areas_subtitle: "실리콘밸리와 반도 전역 22개 도시에 서비스를 제공합니다 — Burlingame부터 San Jose까지. 도시가 안 보이나요? 전화 주세요.",
+    areas_subtitle: "실리콘밸리와 반도 전역 23개 도시에 서비스를 제공합니다 — Burlingame부터 San Jose까지. 도시가 안 보이나요? 전화 주세요.",
 
     trust_title:  "가족들이 Signature Luxury Cleaning을<br><em>신뢰하는 이유는?</em>",
 
@@ -920,7 +920,7 @@ const TRANSLATIONS = {
     cta_btn:      "<small>iPhone과 Android에서 작동</small><strong>가격 확인하고 예약</strong>",
     cta_or:       "또는 전화하세요:",
 
-    footer_desc:     "실리콘밸리에서 가장 신뢰받는 럭셔리 주거 청소 서비스. 산호세, 팔로알토, 마운틴뷰, 서니베일 및 22개 도시 서비스.",
+    footer_desc:     "실리콘밸리에서 가장 신뢰받는 럭셔리 주거 청소 서비스. 산호세, 팔로알토, 마운틴뷰, 서니베일 및 23개 도시 서비스.",
     footer_services: "서비스",
     footer_contact:  "연락처",
     footer_areas:    "서비스 지역",
@@ -931,7 +931,7 @@ const TRANSLATIONS = {
     aeo_how2: "웹 앱으로 60초 안에 예약하세요: 서비스 선택, 빈도 선택, 날짜와 시간 선택, 주소 확인. Stripe로 결제. 팀이 도착하여 서비스를 수행하고, 만족을 확인하기 위해 함께 점검합니다.",
     aeo_why: "Signature Luxury Cleaning은 2023년부터 오너가 직접 운영하며, 프랜차이즈나 콜센터가 아닙니다. 모든 대화는 오너에게 직접 전달됩니다. 모든 청소원은 신원 조회, 보증, 개인 교육을 받습니다. 전액 배상 보험에 가입되어 있습니다.",
     aeo_reviews: "Signature Luxury Cleaning은 Google에서 5.0★ 평점을 유지하며, Palo Alto, Mountain View, Cupertino, Belmont, Burlingame 고객들의 리뷰가 있습니다. 고객들은 일관성, 전문성, 개인 공간 존중을 꾸준히 언급합니다.",
-    aeo_areas: "반도와 실리콘밸리 전역 22개 도시에 서비스를 제공합니다 — Burlingame, San Mateo부터 San Jose까지. 대부분 지역 당일 서비스 가능. San Mateo 카운티와 Santa Clara 카운티 전역을 커버합니다.",
+    aeo_areas: "반도와 실리콘밸리 전역 23개 도시에 서비스를 제공합니다 — Burlingame, San Mateo부터 San Jose까지. 대부분 지역 당일 서비스 가능. San Mateo 카운티와 Santa Clara 카운티 전역을 커버합니다.",
   }
 ,
 
@@ -1103,8 +1103,8 @@ const TRANSLATIONS = {
     rev6_text: "「全面リフォーム後の施工後清掃 — 粉塵も残材も完璧に除去。家が新築のようになりました。チーム全員の素晴らしい仕事です。」",
     areas_label: "対応エリア",
     areas_title: "シリコンバレーの<br><em>どの都市に対応？</em>",
-    aeo_areas: "ペニンシュラとシリコンバレーの22都市に対応 — BurlingameやSan MateoからSan Joseまで。多くのエリアで当日対応が可能です。San Mateo郡とSanta Clara郡をカバーしています。",
-    areas_subtitle: "シリコンバレー＆ペニンシュラの22都市に対応 — BurlingameからSan Joseまで。お住まいの都市がない場合はお電話ください — 対応できる場合があります。",
+    aeo_areas: "ペニンシュラとシリコンバレーの23都市に対応 — BurlingameやSan MateoからSan Joseまで。多くのエリアで当日対応が可能です。San Mateo郡とSanta Clara郡をカバーしています。",
+    areas_subtitle: "シリコンバレー＆ペニンシュラの23都市に対応 — BurlingameからSan Joseまで。お住まいの都市がない場合はお電話ください — 対応できる場合があります。",
     trust_title: "ご家族に信頼される理由<br><em>Signature Luxury Cleaning</em>",
     cta_label: "📱 さあ、始めましょう",
     cta_title: "ピカピカの我が家、<br><em>始めませんか？</em>",
@@ -1113,7 +1113,7 @@ const TRANSLATIONS = {
     cta_or: "またはお電話で：",
     cta_or_call: "またはお電話で：<a href='tel:6506193504' style='color:var(--gold-light);'>(650) 619-3504</a>",
     pwa_cta_small: "iPhone・Android対応",
-    footer_desc: "シリコンバレー＆ペニンシュラで最も信頼されるラグジュアリー住宅清掃サービス。Burlingame、Palo Alto、Cupertino、Mountain View、Sunnyvaleなど22都市に対応。",
+    footer_desc: "シリコンバレー＆ペニンシュラで最も信頼されるラグジュアリー住宅清掃サービス。Burlingame、Palo Alto、Cupertino、Mountain View、Sunnyvaleなど23都市に対応。",
     footer_services: "サービス",
     footer_company: "会社情報",
     footer_about: "私たちについて",
