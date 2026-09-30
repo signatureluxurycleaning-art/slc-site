@@ -37,6 +37,13 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     fica com o pé atrás" — o formulário de cotação (home + 8 serviços) e a
     seção da primeira limpeza passam a dizer "the owner" / "one of the
     owners"; as reviews reais dos clientes que citam o nome ficam.
+14. (30/09, tarde) NENHUM NOME, SEMPRE "OWNERS": "Não pode aparecer nem meu
+    nome, nem o da Cristine, nem o da Viridiane. Em lugar nenhum. Fala donos.
+    Sempre donos." — formulário e cards passam ao plural ("the owners will
+    text you", "You Always Talk to the Owners", "One of the owners…"); nas
+    reviews reais o nome vira [They]/[their] entre colchetes (edição sinalizada,
+    sentido preservado), no card e no JSON-LD; comentário HTML sem nome. A
+    verificação agora varre TODOS os arquivos de texto do site, sem exceção.
 
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
@@ -1083,6 +1090,8 @@ def patch_step13():
             continue  # página sem formulário (não deveria acontecer)
         t2 = t
         for old, new, where in OWNER_NAME_SWAPS:
+            if old not in t2 and plural_owners(new) in t2:
+                continue  # o passo 14 já levou este texto ao plural
             t2 = sub_count(t2, old, new, 1, f"{p.relative_to(ROOT)} ({where})")
         if p.name == "index.html" and p.parent == ROOT:
             t2 = sub_count(t2, FIRST_VISIT_OLD, FIRST_VISIT_NEW, 1, "index (first-visit)")
@@ -1090,6 +1099,69 @@ def patch_step13():
             write(p, t2)
             n_pages += 1
     log(f"passo 13: nome do dono removido do formulário de cotação e da 1ª limpeza ({n_pages} página(s) alteradas; reviews reais mantidas)")
+
+
+# ═════════════ 14. (30/09, tarde) NENHUM NOME — SEMPRE "OWNERS" ═══════════════
+# "Não pode aparecer nem meu nome, nem o nome da Cristine, nem o nome da
+# Viridiane. Em lugar nenhum. Fala donos. Sempre donos."
+
+def plural_owners(s: str) -> str:
+    """'the owner will text' → 'the owners will text' (só as frases do formulário)."""
+    return s.replace("the owner will text", "the owners will text").replace("The owner will text", "The owners will text")
+
+
+HOME_OWNERS_SWAPS = [
+    ("<h4>You Always Talk to an Owner</h4>", "<h4>You Always Talk to the Owners</h4>"),
+    ("<h4>An Owner on Your First Cleaning</h4>", "<h4>One of the Owners on Your First Cleaning</h4>"),
+    ("<p>An owner works alongside your team on the first cleaning.",
+     "<p>One of the owners works alongside your team on the first cleaning."),
+    ('<h2 class="section-title">An owner is there for your first cleaning.</h2>',
+     '<h2 class="section-title">One of the owners is there for your first cleaning.</h2>'),
+]
+# Reviews reais do Google: o trecho com o nome vira [They]/[their] — colchetes =
+# edição sinalizada, sentido do cliente preservado. Cada trecho aparece 2x na
+# home: no card visível e no JSON-LD (reviewBody).
+REVIEW_SWAPS = [
+    ("We have been using Raphael cleaning service for a while now",
+     "We have been using [their] cleaning service for a while now"),
+    ("Raphael and his team are so quick to respond", "[They] are so quick to respond"),
+    ("Raphael and his team did an amazing deep clean", "[They] did an amazing deep clean"),
+    ("Veridiana and her team are awesome!", "[They] are awesome!"),
+]
+COMMENT_SWAPS = [
+    ("<!-- Checklist PDF link (once uploaded by Raphael) -->", "<!-- Checklist PDF link (once uploaded by the owners) -->"),
+]
+NAME_RE = re.compile(r"raphael|rafael|christine|cristine|veridiana|viridian", re.I)
+TEXT_SUFFIXES = {".html", ".htm", ".js", ".css", ".xml", ".txt", ".json", ".webmanifest", ".md", ".svg"}
+
+
+def patch_step14():
+    n_pages = 0
+    for p in quote_form_pages():
+        t = read(p)
+        if "qf-form-sub" not in t:
+            continue
+        t2 = t
+        for old, new, where in OWNER_NAME_SWAPS:
+            t2 = sub_count(t2, new, plural_owners(new), 1, f"{p.relative_to(ROOT)} ({where}, plural)")
+        if p.name == "index.html" and p.parent == ROOT:
+            for old, new in HOME_OWNERS_SWAPS:
+                t2 = sub_count(t2, old, new, 1, "index (owners)")
+            for old, new in REVIEW_SWAPS:
+                t2 = sub_count(t2, old, new, 2, "index (review: card + JSON-LD)")
+        if t2 != t:
+            write(p, t2)
+            n_pages += 1
+    for p in sorted(ROOT.rglob("*.html")):
+        t = read(p)
+        t2 = t
+        for old, new in COMMENT_SWAPS:
+            if old in t2:
+                t2 = t2.replace(old, new)
+        if t2 != t:
+            write(p, t2)
+            n_pages += 1
+    log(f"passo 14: 'the owners' no formulário e nos cards, nomes fora das reviews e dos comentários ({n_pages} alteração(ões) de página)")
 
 
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
@@ -1284,8 +1356,30 @@ def verify():
         if re.search(r"Raphael|Rafael|Veridiana", body):
             stale.append(str(p.relative_to(ROOT)))
     check(not stale, f"nenhum texto nosso cita Raphael/Veridiana (restam: {stale[:4]})")
-    check(FIRST_VISIT_NEW in idx and "the owner will text you a personalized price" in idx
-          and "<p>The owner will text <strong" in idx, "home: 1ª limpeza = 'one of the owners' e formulário = 'the owner'")
+
+    # passo 14: NENHUM nome em NENHUM arquivo de texto do site (comentários, JSON-LD e reviews inclusos)
+    leaks = [str(p.relative_to(ROOT)) for p in ROOT.rglob("*")
+             if p.is_file() and p.suffix.lower() in TEXT_SUFFIXES and NAME_RE.search(read(p))]
+    check(not leaks, f"nenhum nome (Raphael/Rafael/Christine/Cristine/Veridiana/Viridiane) em arquivo nenhum (restam: {leaks[:5]})")
+    singular = [str(p.relative_to(ROOT)) for p in with_form
+                if "the owners will text you a personalized price" not in read(p)
+                or "<p>The owners will text <strong" not in read(p)
+                or "the owners will text you shortly" not in read(p)
+                or re.search(r"[Tt]he owner will", read(p))]
+    check(not singular, f"formulário no plural ('the owners will text') nas 9 páginas (faltam: {singular[:3]})")
+    check(FIRST_VISIT_NEW in idx and all(new in idx for _o, new in HOME_OWNERS_SWAPS)
+          and not re.search(r"\b[Aa]n [Oo]wner\b", idx),
+          "home: 1ª limpeza e cards dizem 'one of the owners' / 'the owners' (nenhum 'an owner')")
+    check(all(idx.count(new) == 2 for _o, new in REVIEW_SWAPS), "home: 4 reviews com [They]/[their] no card e no JSON-LD")
+    import json as _json
+    blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S)
+    try:
+        for b in blocks:
+            _json.loads(b)
+        ld_ok = bool(blocks)
+    except ValueError:
+        ld_ok = False
+    check(ld_ok, f"JSON-LD da home continua JSON válido ({len(blocks)} bloco(s))")
 
     return ok
 
@@ -1302,6 +1396,7 @@ def main():
     patch_quote_form()
     patch_step12()  # a página nova nasce da de San Mateo já completa
     patch_step13()  # depois do formulário (passo 11): troca o nome do dono nele
+    patch_step14()  # por último: plural "owners" + nenhum nome em lugar nenhum
 
     print("── mudanças ──")
     for c in CHANGES:
