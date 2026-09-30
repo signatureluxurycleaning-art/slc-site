@@ -33,6 +33,10 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     sitelinks por cidade. Cria /locations/foster-city/ (não existia — os
     links "Foster City" caíam em /#areas), põe Redwood Shores na página de
     Redwood City, 22 → 23 cidades em todo o site (7 línguas) e sitemap.
+13. (30/09) SEM O NOME DO DONO: "quando coloca Raphael, é homem, e muita gente
+    fica com o pé atrás" — o formulário de cotação (home + 8 serviços) e a
+    seção da primeira limpeza passam a dizer "the owner" / "one of the
+    owners"; as reviews reais dos clientes que citam o nome ficam.
 
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
@@ -1043,6 +1047,51 @@ def patch_step12():
     log(f"passo 12: Foster City + Redwood Shores; {n_links} link(s) 'Foster City' → página nova; 23 cidades (7 línguas); sitemap")
 
 
+# ═════════════ 13. (30/09) SEM O NOME DO DONO NO TEXTO PARA O CLIENTE ═════════
+# "Tira meu nome, coloca só dono. Na hora que coloca Raphael, é homem, e muitas
+# pessoas ficam com o pé atrás." Vale para tudo que o cliente lê antes de
+# fechar: o formulário de cotação (9 páginas: home + 8 serviços) e a seção da
+# primeira limpeza na home. As REVIEWS reais do Google que citam "Raphael" são
+# palavras dos clientes — ficam. O app usa o mesmo texto (shared/firstVisitPromise.ts).
+
+OWNER_NAME_SWAPS = [
+    # (antes, depois, onde aparece)
+    ("Tell us about your home and Raphael, the owner, will text you a personalized price.",
+     "Tell us about your home and the owner will text you a personalized price.",
+     "qf-form-sub"),
+    ("<p>Raphael will text <strong data-qf=\"phone\"></strong> shortly with your personalized price.</p>",
+     "<p>The owner will text <strong data-qf=\"phone\"></strong> shortly with your personalized price.</p>",
+     "qf-success"),
+    ("We already have your request — Raphael will text you shortly.",
+     "We already have your request — the owner will text you shortly.",
+     "erro 429"),
+]
+FIRST_VISIT_OLD = "For your first cleaning, Raphael or Veridiana is in your home in person, working alongside your two assistants."
+FIRST_VISIT_NEW = "For your first cleaning, one of the owners is in your home in person, working alongside your two assistants."
+REVIEW_NAME_RE = re.compile(r'(?:using Raphael cleaning service|Raphael and his team|Veridiana and her team)')
+
+
+def quote_form_pages():
+    return [ROOT / "index.html"] + sorted((ROOT / "services").glob("*/index.html"))
+
+
+def patch_step13():
+    n_pages = 0
+    for p in quote_form_pages():
+        t = read(p)
+        if "qf-form-sub" not in t:
+            continue  # página sem formulário (não deveria acontecer)
+        t2 = t
+        for old, new, where in OWNER_NAME_SWAPS:
+            t2 = sub_count(t2, old, new, 1, f"{p.relative_to(ROOT)} ({where})")
+        if p.name == "index.html" and p.parent == ROOT:
+            t2 = sub_count(t2, FIRST_VISIT_OLD, FIRST_VISIT_NEW, 1, "index (first-visit)")
+        if t2 != t:
+            write(p, t2)
+            n_pages += 1
+    log(f"passo 13: nome do dono removido do formulário de cotação e da 1ª limpeza ({n_pages} página(s) alteradas; reviews reais mantidas)")
+
+
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
 PAGE_404 = """<!DOCTYPE html>
@@ -1225,6 +1274,19 @@ def verify():
     r = subprocess.run(["node", "--check", str(ROOT / "assets/translations.js")], capture_output=True, text=True)
     check(r.returncode == 0, f"translations.js parseia como JS ({r.stderr.strip()[:120]})")
 
+    # passo 13: nenhum texto NOSSO cita o dono pelo nome (reviews dos clientes ficam)
+    with_form = [p for p in quote_form_pages() if "qf-form-sub" in read(p)]
+    check(len(with_form) == 9, f"9 páginas com formulário de cotação ({len(with_form)})")
+    stale = []
+    for p in ROOT.rglob("*.html"):
+        body = re.sub(r"<!--.*?-->", "", read(p), flags=re.S)  # comentário HTML não é texto do cliente
+        body = REVIEW_NAME_RE.sub("", body)
+        if re.search(r"Raphael|Rafael|Veridiana", body):
+            stale.append(str(p.relative_to(ROOT)))
+    check(not stale, f"nenhum texto nosso cita Raphael/Veridiana (restam: {stale[:4]})")
+    check(FIRST_VISIT_NEW in idx and "the owner will text you a personalized price" in idx
+          and "<p>The owner will text <strong" in idx, "home: 1ª limpeza = 'one of the owners' e formulário = 'the owner'")
+
     return ok
 
 
@@ -1238,7 +1300,8 @@ def main():
     add_new_files()
     patch_measurement_everywhere()  # depois do 404.html, que é reescrito acima
     patch_quote_form()
-    patch_step12()  # por último: a página nova nasce da de San Mateo já completa
+    patch_step12()  # a página nova nasce da de San Mateo já completa
+    patch_step13()  # depois do formulário (passo 11): troca o nome do dono nele
 
     print("── mudanças ──")
     for c in CHANGES:
