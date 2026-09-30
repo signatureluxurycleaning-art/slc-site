@@ -143,7 +143,7 @@
         <div class="qf-form-head">
           <div class="qf-form-kicker">Prefer a personal text?</div>
           <h3 class="qf-form-title">Get a personalized price by text</h3>
-          <p class="qf-form-sub">Tell us about your home and the owner will text you a personalized price. No account needed.</p>
+          <p class="qf-form-sub">Tell us about your home and the owners will text you a personalized price. No account needed.</p>
         </div>
         <div class="qf-grid">
           <label class="qf-field"><span>Your name</span><input name="name" type="text" autocomplete="name" required maxlength="120" placeholder="First and last name"></label>
@@ -183,7 +183,7 @@
       <div class="qf-success" id="qfSuccess" hidden>
         <div class="qf-success-icon">✅</div>
         <h3>Thanks, <span data-qf="firstName">there</span>!</h3>
-        <p>The owner will text <strong data-qf="phone"></strong> shortly with your personalized price.</p>
+        <p>The owners will text <strong data-qf="phone"></strong> shortly with your personalized price.</p>
         <p class="qf-success-sub">Want it right now? <a href="https://app.signatureluxurycleaning.com/?src=site-quote-regular-cleaning" target="_blank" rel="noopener">See your price and book in the app →</a></p>
       </div>
     </div>
@@ -503,7 +503,7 @@
               return;
             }
             btn.disabled = false; btn.textContent = '💬 Text Me My Price';
-            if (res.status === 429) { showError('We already have your request — the owner will text you shortly. If it\'s urgent, call <a href="tel:+16506193504">(650) 619-3504</a>.'); return; }
+            if (res.status === 429) { showError('We already have your request — the owners will text you shortly. If it\'s urgent, call <a href="tel:+16506193504">(650) 619-3504</a>.'); return; }
             if (res.status === 400) {
               var f = res.body && res.body.field;
               if (f === 'phone' || f === 'zip' || f === 'name') { mark(f, true); showError('Please double-check your ' + (f === 'zip' ? 'ZIP code' : f === 'phone' ? 'mobile number' : 'name') + '.'); return; }
