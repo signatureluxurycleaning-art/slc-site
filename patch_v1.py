@@ -56,6 +56,13 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     para o lugar certo. Os endereços das páginas de cidade NÃO mudam aqui
     (aguardam decisão do dono sobre Los Altos).
 
+16. (02/10) LINK "LEAVE US A REVIEW" QUEBRADO: o place ID do Google no link
+    de review da home e das 23 páginas de cidade tinha 26 caracteres (faltava
+    um byte) e o Google respondia 404 — ninguém conseguia deixar review pelo
+    site. O ID certo foi montado a partir do ID da ficha no Maps (o mesmo
+    CID 10124342750083586343) e testado: abre "escrever review" da SLC.
+    Só muda o href desses links; texto, títulos e schema ficam iguais.
+
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
 """
@@ -1268,6 +1275,24 @@ def patch_step15():
     log(f"passo 15: Facebook novo, link do Google, Yelp, 12 reviews e cidades no schema ({n} página(s)); _redirects para /pricing, /contact, /about, /faq, /book…")
 
 
+# ═════════════════════ 16. (02/10) link de review do Google quebrado ═════════
+
+REVIEW_PID_OLD = "ChIJ4xtKfMPcIgInmQgTF-SAjA"   # 26 caracteres, faltava 1 byte: o Google dava 404
+REVIEW_PID_NEW = "ChIJ4xtKfMPcIgIRJ5kIExfkgIw"  # da ficha 0x222dcc37c4a1be3:0x8c80e41713089927; testado em 02/10
+REVIEW_LINK_OLD = "https://search.google.com/local/writereview?placeid=" + REVIEW_PID_OLD
+REVIEW_LINK_NEW = "https://search.google.com/local/writereview?placeid=" + REVIEW_PID_NEW
+
+
+def patch_step16():
+    n = 0
+    for p in sorted(ROOT.rglob("*.html")):
+        t = read(p)
+        if REVIEW_LINK_OLD in t:
+            write(p, t.replace(REVIEW_LINK_OLD, REVIEW_LINK_NEW))
+            n += 1
+    log(f"passo 16: link 'Leave us a review' do Google consertado ({n} página(s))")
+
+
 
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
@@ -1525,6 +1550,19 @@ def verify():
                      ("#" in r[1] and f'id="{r[1].split("#")[1]}"' in idx) for r in rules)
     check(targets_ok, "_redirects: toda âncora de destino existe na home")
 
+    # passo 16
+    import base64 as _b64
+    import struct as _struct
+    raw = _b64.urlsafe_b64decode(REVIEW_PID_NEW + "=" * (-len(REVIEW_PID_NEW) % 4))
+    check(len(REVIEW_PID_NEW) == 27 and raw[:3] == b"\x0a\x12\x09" and raw[11:12] == b"\x11"
+          and _struct.unpack("<Q", raw[12:20])[0] == 10124342750083586343,
+          "place ID novo é o da ficha da SLC (mesmo CID do Maps)")
+    txt = [p for p in ROOT.rglob("*") if p.is_file() and p.suffix in (".html", ".js", ".xml", ".txt", ".css", "")]
+    old_pid = [str(p.relative_to(ROOT)) for p in txt if REVIEW_PID_OLD in read(p)]
+    check(not old_pid, f"nenhum place ID quebrado no site (restam: {old_pid[:3]})")
+    with_link = [p for p in htmls if REVIEW_LINK_NEW in read(p)]
+    check(len(with_link) == 24, f"link de review certo na home e nas 23 páginas de cidade ({len(with_link)})")
+
 
     return ok
 
@@ -1543,6 +1581,7 @@ def main():
     patch_step13()  # depois do formulário (passo 11): troca o nome do dono nele
     patch_step14()  # por último: plural "owners" + nenhum nome em lugar nenhum
     patch_step15()  # dados certos para ChatGPT/Bing + _redirects
+    patch_step16()  # link de review do Google consertado
 
     print("── mudanças ──")
     for c in CHANGES:
