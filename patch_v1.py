@@ -45,6 +45,17 @@ O QUE ESTE SCRIPT FAZ (e por quê):
     sentido preservado), no card e no JSON-LD; comentário HTML sem nome. A
     verificação agora varre TODOS os arquivos de texto do site, sem exceção.
 
+15. (02/10) CHATGPT / BING: o ChatGPT indicou a SLC para 2 clientes e o dono
+    quer ser achado melhor. Os dados que os robôs leem estavam errados: o
+    schema apontava para a Página ANTIGA do Facebook (perdida em ago/2026), as
+    páginas de cidade tinham "YOUR_GOOGLE_CID" no lugar do link do Google, a
+    contagem de reviews estava em 8/9 (são 12) e a home listava San Jose em
+    primeiro e não tinha Atherton, Los Altos Hills, Woodside e San Carlos. E
+    39% das visitas do robô de busca do ChatGPT davam 404 em endereços comuns
+    (/pricing, /contact, /about, /faq, /book…) — _redirects leva cada um
+    para o lugar certo. Os endereços das páginas de cidade NÃO mudam aqui
+    (aguardam decisão do dono sobre Los Altos).
+
 Idempotente: rodar duas vezes dá no mesmo. Falha alto (exit 1) se qualquer
 âncora esperada não existir ou existir em quantidade errada.
 """
@@ -1164,6 +1175,100 @@ def patch_step14():
     log(f"passo 14: 'the owners' no formulário e nos cards, nomes fora das reviews e dos comentários ({n_pages} alteração(ões) de página)")
 
 
+# ═════════════════════ 15. (02/10) dados certos para ChatGPT/Bing ════════════
+
+FB_OLD_TOKEN = 'www.facebook.com/signatureluxurycleaning"'
+FB_NEW_TOKEN = 'www.facebook.com/signatureluxurycleaningca"'
+GMAPS_PLACEHOLDER = "https://www.google.com/maps?cid=YOUR_GOOGLE_CID"
+GMAPS_REAL = "https://www.google.com/maps?cid=10124342750083586343"  # CID conferido no Maps em 02/10
+GMAPS_PLACE_OLD = "https://www.google.com/maps/place/?q=place_id:ChIJ4xtKfMPcIgInmQgTF-SAjA"  # não abria a ficha
+YELP_URL = "https://www.yelp.com/biz/signature-luxury-cleaning-belmont"
+REVIEW_COUNT = "12"  # Google, 30/09/2026: 12 reviews, todas 5★
+AREA_ORDER = [
+    "Los Altos", "Palo Alto", "Los Altos Hills", "Menlo Park", "Atherton", "Mountain View",
+    "Woodside", "Cupertino", "Saratoga", "Los Gatos", "Sunnyvale", "Santa Clara", "Campbell",
+    "San Jose", "Milpitas", "Fremont", "Redwood City", "San Carlos", "Belmont", "San Mateo",
+    "Foster City", "Burlingame", "Hillsborough",
+]
+HOME_DESC_OLD = ("Silicon Valley & Peninsula's most trusted luxury residential cleaning service. "
+                 "Serving Palo Alto, Burlingame, Mountain View, Sunnyvale, Santa Clara, Cupertino and "
+                 "23 cities across Silicon Valley & Peninsula.")
+HOME_DESC_NEW = ("Small, owner-operated house cleaning company serving Los Altos, Palo Alto and 23 cities "
+                 "across Silicon Valley and the Peninsula. One of the owners leads the first cleaning in "
+                 "every new home. Bonded & insured, 5.0 stars on Google.")
+REDIRECTS = """# Endereços comuns que robôs e pessoas tentam (antes davam 404) — passo 15, 02/10/2026
+/about           /#about        301
+/about/          /#about        301
+/about-us        /#about        301
+/about-us/       /#about        301
+/contact         /#quote-form   301
+/contact/        /#quote-form   301
+/contact-us      /#quote-form   301
+/contact-us/     /#quote-form   301
+/quote           /#quote-form   301
+/quote/          /#quote-form   301
+/pricing         /#services     301
+/pricing/        /#services     301
+/prices          /#services     301
+/prices/         /#services     301
+/services        /#services     301
+/services/       /#services     301
+/locations       /#areas        301
+/locations/      /#areas        301
+/service-areas   /#areas        301
+/service-areas/  /#areas        301
+/reviews         /#reviews      301
+/reviews/        /#reviews      301
+/testimonials    /#reviews      301
+/testimonials/   /#reviews      301
+/faq             /#faq          301
+/faq/            /#faq          301
+/gallery         /#gallery      301
+/gallery/        /#gallery      301
+/book            https://app.signatureluxurycleaning.com/?src=site-book   302
+/book/           https://app.signatureluxurycleaning.com/?src=site-book   302
+/booking         https://app.signatureluxurycleaning.com/?src=site-book   302
+/booking/        https://app.signatureluxurycleaning.com/?src=site-book   302
+"""
+
+
+def _home_area_block():
+    lines = ",\n".join('      {"@type": "City", "name": "%s"}' % c for c in AREA_ORDER)
+    return '"areaServed": [\n' + lines + "\n    ],"
+
+
+def patch_step15():
+    n = 0
+    for p in sorted(ROOT.rglob("*.html")):
+        t = read(p)
+        t2 = t.replace(FB_OLD_TOKEN, FB_NEW_TOKEN).replace(GMAPS_PLACEHOLDER, GMAPS_REAL).replace(GMAPS_PLACE_OLD, GMAPS_REAL)
+        t2 = re.sub(r'"ratingCount": "(8|9)"', '"ratingCount": "%s"' % REVIEW_COUNT, t2)
+        # Yelp no sameAs das páginas de cidade (o bloco termina com o Facebook)
+        city_tail = '"https://www.facebook.com/signatureluxurycleaningca"\n  ],'
+        if p.parent.parent.name == "locations" and city_tail in t2 and YELP_URL not in t2:
+            t2 = t2.replace(city_tail, '"https://www.facebook.com/signatureluxurycleaningca",\n    "%s"\n  ],' % YELP_URL, 1)
+        if t2 != t:
+            write(p, t2)
+            n += 1
+    home = ROOT / "index.html"
+    t = read(home)
+    t2 = t
+    if HOME_DESC_OLD in t2:
+        t2 = sub_count(t2, HOME_DESC_OLD, HOME_DESC_NEW, 1, "index (descrição do schema)")
+    t2, k = re.subn(r'"areaServed": \[\n(?:\s*\{"@type": "City", "name": "[^"]+"\},?\n)+\s*\],',
+                    _home_area_block(), t2, count=1)
+    if k != 1:
+        ERRORS.append("index: bloco areaServed do schema não encontrado")
+    home_tail = '"%s"\n    ],' % GMAPS_REAL
+    if YELP_URL not in t2:
+        t2 = sub_count(t2, home_tail, '"%s",\n      "%s"\n    ],' % (GMAPS_REAL, YELP_URL), 1, "index (Yelp no sameAs)")
+    if t2 != t:
+        write(home, t2)
+    write(ROOT / "_redirects", REDIRECTS)
+    log(f"passo 15: Facebook novo, link do Google, Yelp, 12 reviews e cidades no schema ({n} página(s)); _redirects para /pricing, /contact, /about, /faq, /book…")
+
+
+
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
 PAGE_404 = """<!DOCTYPE html>
@@ -1381,6 +1486,46 @@ def verify():
         ld_ok = False
     check(ld_ok, f"JSON-LD da home continua JSON válido ({len(blocks)} bloco(s))")
 
+    # passo 15
+    import json as _json
+    htmls = sorted(ROOT.rglob("*.html"))
+    old_fb = [str(p.relative_to(ROOT)) for p in htmls if FB_OLD_TOKEN in read(p)]
+    check(not old_fb, f"nenhum link para a Página antiga do Facebook (restam: {old_fb[:3]})")
+    ph = [str(p.relative_to(ROOT)) for p in htmls if "YOUR_GOOGLE_CID" in read(p) or GMAPS_PLACE_OLD in read(p)]
+    check(not ph, f"nenhum 'YOUR_GOOGLE_CID' nem link place_id antigo (restam: {ph[:3]})")
+    no_cid = [str(p.relative_to(ROOT)) for p in htmls if '"LocalBusiness"' in read(p) and GMAPS_REAL not in read(p)]
+    check(not no_cid, f"link do Google (CID) no schema de todas as páginas com LocalBusiness (faltam: {no_cid[:3]})")
+    bad_rc = [str(p.relative_to(ROOT)) for p in htmls if re.search(r'"ratingCount": "(?!12")', read(p))]
+    check(not bad_rc, f"ratingCount = 12 em todo schema (fora: {bad_rc[:3]})")
+    ld_bad, ld_n = [], 0
+    for p in htmls:
+        for b in re.findall(r'<script type="application/ld\+json">(.*?)</script>', read(p), re.S):
+            ld_n += 1
+            try:
+                _json.loads(b)
+            except ValueError:
+                ld_bad.append(str(p.relative_to(ROOT)))
+    check(not ld_bad, f"todos os {ld_n} blocos JSON-LD do site são JSON válido (com erro: {ld_bad[:3]})")
+    hb = _json.loads(re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S)[0])
+    names = [a["name"] for a in hb["areaServed"]]
+    check(names[:2] == ["Los Altos", "Palo Alto"] and len(names) == 23 and len(set(names)) == 23
+          and {"Atherton", "Los Altos Hills", "Woodside", "San Carlos"} <= set(names),
+          f"home: 23 cidades no schema, Los Altos e Palo Alto primeiro ({len(names)})")
+    check(YELP_URL in hb["sameAs"] and "https://www.facebook.com/signatureluxurycleaningca" in hb["sameAs"],
+          "home: sameAs com Facebook novo e Yelp")
+    check(hb["description"].startswith("Small, owner-operated house cleaning company serving Los Altos"),
+          "home: descrição do schema nova")
+    cities_no_yelp = [p.parent.name for p in (ROOT / "locations").glob("*/index.html") if YELP_URL not in read(p)]
+    check(not cities_no_yelp, f"páginas de cidade com Yelp no sameAs (faltam: {cities_no_yelp[:3]})")
+    rd = read(ROOT / "_redirects")
+    rules = [l.split() for l in rd.splitlines() if l.strip() and not l.startswith("#")]
+    check(len(rules) == 32 and all(len(r) == 3 and r[2] in ("301", "302") for r in rules),
+          f"_redirects com 32 regras bem formadas ({len(rules)})")
+    targets_ok = all(r[1].startswith("https://app.signatureluxurycleaning.com/") or
+                     ("#" in r[1] and f'id="{r[1].split("#")[1]}"' in idx) for r in rules)
+    check(targets_ok, "_redirects: toda âncora de destino existe na home")
+
+
     return ok
 
 
@@ -1397,6 +1542,7 @@ def main():
     patch_step12()  # a página nova nasce da de San Mateo já completa
     patch_step13()  # depois do formulário (passo 11): troca o nome do dono nele
     patch_step14()  # por último: plural "owners" + nenhum nome em lugar nenhum
+    patch_step15()  # dados certos para ChatGPT/Bing + _redirects
 
     print("── mudanças ──")
     for c in CHANGES:
