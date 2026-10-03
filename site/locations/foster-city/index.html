@@ -211,6 +211,21 @@
   <link rel="alternate" hreflang="vi" href="https://signatureluxurycleaning.com/locations/foster-city/?lang=vi">
   <link rel="alternate" hreflang="ko" href="https://signatureluxurycleaning.com/locations/foster-city/?lang=ko">
   <link rel="alternate" hreflang="x-default" href="https://signatureluxurycleaning.com/locations/foster-city/">
+<!-- Meta Pixel (passo 17) — espelha o gtag; nao altera nada do Google -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2304367959989921');
+fbq('track', 'PageView');
+// Contact: clique em ligar/SMS (delegado - vale para a pagina inteira)
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"], a[href^="sms:"]') : null;
+  if (a && typeof fbq === 'function') fbq('track', 'Contact');
+}, true);
+</script>
 </head>
 <body>
 
@@ -644,7 +659,7 @@
   <script>
     // slc-forward-v2 — leva gclid/utm do anúncio até o app e conserta a âncora na carga
     (function() {
-      var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      var KEYS = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
       var STORE = 'slc:click-params:v1';
       function readParams() {
         var out = {};
