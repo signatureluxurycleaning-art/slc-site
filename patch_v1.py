@@ -1293,6 +1293,61 @@ def patch_step16():
     log(f"passo 16: link 'Leave us a review' do Google consertado ({n} página(s))")
 
 
+# ═════════════ 17. (03/10) Meta Pixel + fbclid + eventos Lead/Contact ════════
+# O Pixel novo da Meta (2304367959989921, criado com a Página nova em 27/09)
+# nunca foi instalado: a Meta não via visitante do site, não media o lead do
+# formulário e não tinha público do site para remarketing. E o encaminhador de
+# parâmetros site→app só levava gclid/utm — clique de anúncio do Facebook que
+# passava pelo site chegava ao app SEM o fbclid (o cadastro era atribuído a
+# "site" em vez de "facebook"). Nada do Google muda: o gtag fica intocado —
+# regra do dono (02/10): melhorar um sem prejudicar o outro.
+
+META_PIXEL_ID = "2304367959989921"
+KEYS_OLD = "var KEYS = ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];"
+KEYS_NEW = "var KEYS = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];"
+LEAD_ANCHOR = "form.hidden = true; ok.hidden = false;"
+LEAD_NEW = "if (typeof fbq === 'function') fbq('track', 'Lead');\n              " + LEAD_ANCHOR
+
+META_PIXEL_SNIPPET = """<!-- Meta Pixel (passo 17) — espelha o gtag; nao altera nada do Google -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '%s');
+fbq('track', 'PageView');
+// Contact: clique em ligar/SMS (delegado - vale para a pagina inteira)
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"], a[href^="sms:"]') : null;
+  if (a && typeof fbq === 'function') fbq('track', 'Contact');
+}, true);
+</script>
+""" % META_PIXEL_ID
+
+
+def patch_step17():
+    n_pixel = n_keys = n_lead = 0
+    for p in sorted(ROOT.rglob("*.html")):
+        t = read(p)
+        orig = t
+        # Pixel base: toda página que já mede com o gtag (a 404 fica de fora).
+        if p.name != "404.html" and "connect.facebook.net/en_US/fbevents.js" not in t and "googletagmanager.com/gtag/js" in t:
+            t = sub_count(t, "</head>", META_PIXEL_SNIPPET + "</head>", 1, f"{p.name} (passo 17: pixel)")
+            n_pixel += 1
+        # fbclid viaja site→app como o gclid já viajava.
+        if KEYS_OLD in t:
+            t = t.replace(KEYS_OLD, KEYS_NEW)
+            n_keys += 1
+        # Lead: no MESMO ponto em que o formulário confirma o envio ao Worker.
+        if LEAD_ANCHOR in t and "fbq('track', 'Lead')" not in t:
+            t = t.replace(LEAD_ANCHOR, LEAD_NEW, 1)
+            n_lead += 1
+        if t != orig:
+            write(p, t)
+    log(f"passo 17: Meta Pixel em {n_pixel} página(s); fbclid no encaminhador em {n_keys}; evento Lead no formulário em {n_lead}")
+
+
 
 # ═════════════════════ 6. 404, robots, htaccess ══════════════════════════════
 
@@ -1563,6 +1618,17 @@ def verify():
     with_link = [p for p in htmls if REVIEW_LINK_NEW in read(p)]
     check(len(with_link) == 24, f"link de review certo na home e nas 23 páginas de cidade ({len(with_link)})")
 
+    # passo 17 — Meta Pixel sem tocar no Google
+    pix_pages = [p for p in htmls if "connect.facebook.net/en_US/fbevents.js" in read(p)]
+    check(len(pix_pages) == 35, f"Meta Pixel em todas as páginas menos a 404 ({len(pix_pages)})")
+    check(all(read(p).count(f"fbq('init', '{META_PIXEL_ID}')") == 1 for p in pix_pages),
+          "pixel inicializado exatamente uma vez por página")
+    check(not any(KEYS_OLD in read(p) for p in htmls),
+          "fbclid encaminhado site→app em todos os forwarders (nenhuma lista antiga restou)")
+    lead_pages = [p for p in htmls if "fbq('track', 'Lead')" in read(p)]
+    check(len(lead_pages) == 9, f"evento Lead da Meta nas 9 páginas com formulário ({len(lead_pages)})")
+    check(all(read(p).count("googletagmanager.com/gtag/js") == 1 for p in pix_pages),
+          "gtag do Google intocado em todas as páginas com pixel (prioridade nº 1 preservada)")
 
     return ok
 
@@ -1582,6 +1648,7 @@ def main():
     patch_step14()  # por último: plural "owners" + nenhum nome em lugar nenhum
     patch_step15()  # dados certos para ChatGPT/Bing + _redirects
     patch_step16()  # link de review do Google consertado
+    patch_step17()  # Meta Pixel + fbclid site→app + eventos Lead/Contact
 
     print("── mudanças ──")
     for c in CHANGES:
