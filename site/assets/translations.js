@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     topbar_offer:    "New clients save up to 15% on every visit with recurring service — weekly −15%, bi-weekly −10%",
     topbar_phone:    "Call or text: <span class='accent'>(650) 619-3504</span>",
     topbar_products: "Professional-grade products & equipment",
-    topbar_rating:   "<span class='accent'>5.0★</span> Perfect score on Google Reviews",
+    topbar_rating:   "<span class='accent'>4.7★</span> Google Reviews rating",
     topbar_insured:  "Background-checked, bonded & fully insured team",
     topbar_app:      "No download needed — open our app on any phone",
 
@@ -32,7 +32,7 @@ const TRANSLATIONS = {
     nav_app:      "📱 See Prices & Book",
 
     // Hero
-    hero_badge:       "⭐ 5.0 on Google — 1,200+ cleanings across Silicon Valley & Peninsula",
+    hero_badge:       "⭐ 4.7 on Google — 1,200+ cleanings across Silicon Valley & Peninsula",
     hero_stat_families: "Cleanings Completed",
     hero_stat_rating:   "Google Rating",
     hero_stat_cities:   "Cities Served",
@@ -43,7 +43,7 @@ const TRANSLATIONS = {
     mockup_welcome:     "Welcome back!",
     mockup_services:    "Our Services",
     mockup_book:        "Book Now — Pay Securely in App",
-    badge_rating:       "5.0 — Perfect Score",
+    badge_rating:       "4.7 — Google Rating",
     badge_booking:      "Booking Confirmed!",
     svc_regular:        "Regular",
     svc_deep:           "Deep Clean",
@@ -65,7 +65,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 Eco-Friendly Products",
     trust_3: "💯 100% Satisfaction Guarantee",
     trust_4: "📱 Book & Pay via App",
-    trust_5: "⭐ 5.0★ Google Rating",
+    trust_5: "⭐ 4.7★ Google Rating",
     trust_6: "🔒 Fully Insured",
 
     // Services section
@@ -265,7 +265,7 @@ const TRANSLATIONS = {
     aeo_how: "Book through our web app in under 60 seconds: choose service, select frequency, pick date and time, confirm address. Pay via Stripe. Our team arrives, performs the service, and walks through with you to ensure satisfaction.",
     aeo_how2: "Book through our web app in under 60 seconds: choose service, select frequency, pick date and time, confirm address. Pay via Stripe. Our team arrives, performs the service, and walks through with you to ensure satisfaction.",
     aeo_why: "Signature Luxury Cleaning is owner-operated since 2023, not a franchise or call center. Every conversation reaches one of the owners directly. Every cleaner is background-checked, bonded, and personally trained. We carry full liability insurance.",
-    aeo_reviews: "Signature Luxury Cleaning holds a 5.0★ rating on Google with reviews from clients across Palo Alto, Mountain View, Cupertino, Belmont, and Burlingame. Clients consistently cite consistency, professionalism, and respect for personal space.",
+    aeo_reviews: "Signature Luxury Cleaning holds a 4.7★ rating on Google with reviews from clients across Palo Alto, Mountain View, Cupertino, Belmont, and Burlingame. Clients consistently cite consistency, professionalism, and respect for personal space.",
     aeo_areas: "We serve 23 cities across the Peninsula and Silicon Valley — from Burlingame and San Mateo down to San Jose. Most areas qualify for same-day cleaning availability. Service radius covers San Mateo County and Santa Clara County.",
   },
 
@@ -280,7 +280,7 @@ const TRANSLATIONS = {
     topbar_offer:    "新客户享受定期服务每次最高15%折扣 — 每周−15%，每两周−10%",
     topbar_phone:    "电话或短信：<span class='accent'>(650) 619-3504</span>",
     topbar_products: "专业级清洁产品与设备",
-    topbar_rating:   "<span class='accent'>5.0★</span> Google 评分满分",
+    topbar_rating:   "<span class='accent'>4.7★</span> Google 评分",
     topbar_insured:  "团队通过背景审查 · 已投保并有履约担保",
     topbar_app:      "无需下载 — 在任何手机上打开我们的应用",
 
@@ -302,7 +302,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 环保清洁产品",
     trust_3: "💯 100% 满意保证",
     trust_4: "📱 通过应用预约和付款",
-    trust_5: "⭐ Google 5.0★ 评分",
+    trust_5: "⭐ Google 4.7★ 评分",
     trust_6: "🔒 全额保险",
 
     services_label:    "我们的服务",
@@ -398,7 +398,7 @@ const TRANSLATIONS = {
     aeo_how: "通过我们的网络应用60秒内完成预约：选择服务、选择频率、选择日期和时间、确认地址。通过Stripe支付。我们的团队到达后执行服务，并与您一起确认满意度。",
     aeo_how2: "通过我们的网络应用60秒内完成预约：选择服务、选择频率、选择日期和时间、确认地址。通过Stripe支付。我们的团队到达后执行服务，并与您一起确认满意度。",
     aeo_why: "Signature Luxury Cleaning自2023年起由业主经营，不是连锁店或呼叫中心。每次对话都直接联系到业主。每位清洁工都经过背景调查、担保和亲自培训。我们拥有全额责任保险。",
-    aeo_reviews: "Signature Luxury Cleaning在Google上保持5.0★评分，客户来自Palo Alto、Mountain View、Cupertino、Belmont和Burlingame。客户一致赞扬服务的一致性、专业性和对个人空间的尊重。",
+    aeo_reviews: "Signature Luxury Cleaning在Google上保持4.7★评分，客户来自Palo Alto、Mountain View、Cupertino、Belmont和Burlingame。客户一致赞扬服务的一致性、专业性和对个人空间的尊重。",
     aeo_areas: "我们服务半岛和硅谷的23个城市 — 从Burlingame、San Mateo一直到San Jose。大多数地区可享受当天服务。服务范围覆盖San Mateo县和Santa Clara县。",
   },
 
@@ -413,7 +413,7 @@ const TRANSLATIONS = {
     topbar_offer:    "नए ग्राहक रिकरिंग सेवा के साथ हर बार 15% तक बचाएं — साप्ताहिक −15%, पाक्षिक −10%",
     topbar_phone:    "कॉल या टेक्स्ट: <span class='accent'>(650) 619-3504</span>",
     topbar_products: "पेशेवर-ग्रेड उत्पाद और उपकरण",
-    topbar_rating:   "<span class='accent'>5.0★</span> Google पर परफेक्ट स्कोर",
+    topbar_rating:   "<span class='accent'>4.7★</span> Google रेटिंग",
     topbar_insured:  "पृष्ठभूमि-जांची हुई, बॉन्डेड और पूर्ण बीमित टीम",
     topbar_app:      "डाउनलोड की जरूरत नहीं — किसी भी फोन पर हमारा ऐप खोलें",
 
@@ -435,7 +435,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 पर्यावरण-अनुकूल उत्पाद",
     trust_3: "💯 100% संतुष्टि गारंटी",
     trust_4: "📱 ऐप से बुक और भुगतान करें",
-    trust_5: "⭐ Google 5.0★ रेटिंग",
+    trust_5: "⭐ Google 4.7★ रेटिंग",
     trust_6: "🔒 पूरी तरह बीमाकृत",
 
     services_label:    "हमारी सेवाएं",
@@ -531,7 +531,7 @@ const TRANSLATIONS = {
     aeo_how: "हमारे वेब ऐप से 60 सेकंड में बुक करें: सेवा चुनें, आवृत्ति चुनें, तारीख और समय चुनें, पता पुष्टि करें। Stripe से भुगतान करें। हमारी टीम पहुंचती है, सेवा करती है, और संतुष्टि सुनिश्चित करने के लिए आपके साथ जांच करती है।",
     aeo_how2: "हमारे वेब ऐप से 60 सेकंड में बुक करें: सेवा चुनें, आवृत्ति चुनें, तारीख और समय चुनें, पता पुष्टि करें। Stripe से भुगतान करें। हमारी टीम पहुंचती है, सेवा करती है, और संतुष्टि सुनिश्चित करने के लिए आपके साथ जांच करती है।",
     aeo_why: "Signature Luxury Cleaning 2023 से मालिक-संचालित है, फ्रेंचाइज़ी या कॉल सेंटर नहीं। हर बातचीत सीधे मालिकों में से एक तक पहुंचती है। हर सफाईकर्मी की पृष्ठभूमि जांच, बॉन्ड और व्यक्तिगत प्रशिक्षण होता है। हमारे पास पूर्ण देयता बीमा है।",
-    aeo_reviews: "Signature Luxury Cleaning Google पर 5.0★ रेटिंग रखता है, Palo Alto, Mountain View, Cupertino, Belmont और Burlingame के ग्राहकों की समीक्षाओं के साथ। ग्राहक लगातार निरंतरता, व्यावसायिकता और व्यक्तिगत स्थान के सम्मान का उल्लेख करते हैं।",
+    aeo_reviews: "Signature Luxury Cleaning Google पर 4.7★ रेटिंग रखता है, Palo Alto, Mountain View, Cupertino, Belmont और Burlingame के ग्राहकों की समीक्षाओं के साथ। ग्राहक लगातार निरंतरता, व्यावसायिकता और व्यक्तिगत स्थान के सम्मान का उल्लेख करते हैं।",
     aeo_areas: "हम पेनिनसुला और सिलिकॉन वैली के 23 शहरों में सेवा देते हैं — Burlingame और San Mateo से लेकर San Jose तक। अधिकांश क्षेत्रों में उसी दिन सेवा उपलब्ध है। सेवा क्षेत्र San Mateo काउंटी और Santa Clara काउंटी को कवर करता है।",
   },
 
@@ -546,7 +546,7 @@ const TRANSLATIONS = {
     topbar_offer:    "Makatipid ng hanggang 15% sa bawat bisita sa recurring service — weekly −15%, bi-weekly −10%",
     topbar_phone:    "Tumawag o mag-text: <span class='accent'>(650) 619-3504</span>",
     topbar_products: "Mga propesyonal na produkto at kagamitan",
-    topbar_rating:   "<span class='accent'>5.0★</span> Perpektong marka sa Google Reviews",
+    topbar_rating:   "<span class='accent'>4.7★</span> Rating sa Google Reviews",
     topbar_insured:  "Background-checked, bonded at fully insured na team",
     topbar_app:      "Hindi kailangang mag-download — buksan ang aming app sa anumang telepono",
 
@@ -568,7 +568,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 Eco-Friendly na Produkto",
     trust_3: "💯 100% Garantiya ng Kasiyahan",
     trust_4: "📱 Mag-book at Magbayad sa App",
-    trust_5: "⭐ Google 5.0★ Rating",
+    trust_5: "⭐ Google 4.7★ Rating",
     trust_6: "🔒 Ganap na Insured",
 
     services_label:    "Aming Mga Serbisyo",
@@ -664,7 +664,7 @@ const TRANSLATIONS = {
     aeo_how: "Mag-book sa pamamagitan ng aming web app sa loob ng 60 segundo: pumili ng serbisyo, piliin ang frequency, pumili ng petsa at oras, kumpirmahin ang address. Magbayad sa pamamagitan ng Stripe. Darating ang aming team, gagawin ang serbisyo, at susuriin kasama mo para matiyak ang kasiyahan.",
     aeo_how2: "Mag-book sa pamamagitan ng aming web app sa loob ng 60 segundo: pumili ng serbisyo, piliin ang frequency, pumili ng petsa at oras, kumpirmahin ang address. Magbayad sa pamamagitan ng Stripe. Darating ang aming team, gagawin ang serbisyo, at susuriin kasama mo para matiyak ang kasiyahan.",
     aeo_why: "Ang Signature Luxury Cleaning ay owner-operated mula 2023, hindi franchise o call center. Bawat pag-uusap ay direktang naabot ang isa sa mga may-ari. Bawat cleaner ay background-checked, bonded, at personal na sinanay. May full liability insurance kami.",
-    aeo_reviews: "Ang Signature Luxury Cleaning ay may 5.0★ rating sa Google mula sa mga kliyente sa Palo Alto, Mountain View, Cupertino, Belmont, at Burlingame. Palaging binabanggit ng mga kliyente ang consistency, professionalism, at paggalang sa personal na espasyo.",
+    aeo_reviews: "Ang Signature Luxury Cleaning ay may 4.7★ rating sa Google mula sa mga kliyente sa Palo Alto, Mountain View, Cupertino, Belmont, at Burlingame. Palaging binabanggit ng mga kliyente ang consistency, professionalism, at paggalang sa personal na espasyo.",
     aeo_areas: "Naglilingkod kami sa 23 lungsod sa Peninsula at Silicon Valley — mula Burlingame at San Mateo hanggang San Jose. Karamihan sa mga lugar ay maaaring ma-serbisyuhan sa parehong araw. Sakop ang San Mateo County at Santa Clara County.",
   },
 
@@ -679,7 +679,7 @@ const TRANSLATIONS = {
     topbar_offer:    "Khách mới tiết kiệm đến 15% mỗi lần với dịch vụ định kỳ — hàng tuần −15%, hai tuần −10%",
     topbar_phone:    "Gọi hoặc nhắn tin: <span class='accent'>(650) 619-3504</span>",
     topbar_products: "Sản phẩm và thiết bị chuyên nghiệp",
-    topbar_rating:   "<span class='accent'>5.0★</span> Điểm hoàn hảo trên Google Reviews",
+    topbar_rating:   "<span class='accent'>4.7★</span> Đánh giá trên Google Reviews",
     topbar_insured:  "Đội ngũ đã kiểm tra lý lịch, có bảo lãnh & bảo hiểm đầy đủ",
     topbar_app:      "Không cần tải xuống — mở ứng dụng trên bất kỳ điện thoại nào",
 
@@ -701,7 +701,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 Sản Phẩm Thân Thiện Môi Trường",
     trust_3: "💯 Đảm Bảo 100% Hài Lòng",
     trust_4: "📱 Đặt Lịch & Thanh Toán Qua App",
-    trust_5: "⭐ Google 5.0★",
+    trust_5: "⭐ Google 4.7★",
     trust_6: "🔒 Bảo Hiểm Đầy Đủ",
 
     services_label:    "Dịch Vụ Của Chúng Tôi",
@@ -797,7 +797,7 @@ const TRANSLATIONS = {
     aeo_how: "Đặt lịch qua ứng dụng web trong vòng 60 giây: chọn dịch vụ, chọn tần suất, chọn ngày giờ, xác nhận địa chỉ. Thanh toán qua Stripe. Đội ngũ đến, thực hiện dịch vụ, và kiểm tra cùng bạn để đảm bảo hài lòng.",
     aeo_how2: "Đặt lịch qua ứng dụng web trong vòng 60 giây: chọn dịch vụ, chọn tần suất, chọn ngày giờ, xác nhận địa chỉ. Thanh toán qua Stripe. Đội ngũ đến, thực hiện dịch vụ, và kiểm tra cùng bạn để đảm bảo hài lòng.",
     aeo_why: "Signature Luxury Cleaning do chủ sở hữu điều hành từ 2023, không phải nhượng quyền hay tổng đài. Mọi cuộc trò chuyện đều đến trực tiếp chủ sở hữu. Mọi nhân viên đều được kiểm tra lý lịch, bảo lãnh và đào tạo cá nhân. Chúng tôi có bảo hiểm trách nhiệm đầy đủ.",
-    aeo_reviews: "Signature Luxury Cleaning giữ đánh giá 5.0★ trên Google với nhận xét từ khách hàng ở Palo Alto, Mountain View, Cupertino, Belmont và Burlingame. Khách hàng luôn nhắc đến sự nhất quán, chuyên nghiệp và tôn trọng không gian cá nhân.",
+    aeo_reviews: "Signature Luxury Cleaning giữ đánh giá 4.7★ trên Google với nhận xét từ khách hàng ở Palo Alto, Mountain View, Cupertino, Belmont và Burlingame. Khách hàng luôn nhắc đến sự nhất quán, chuyên nghiệp và tôn trọng không gian cá nhân.",
     aeo_areas: "Chúng tôi phục vụ 23 thành phố khắp Peninsula và Silicon Valley — từ Burlingame, San Mateo đến San Jose. Hầu hết khu vực có thể phục vụ trong ngày. Phạm vi bao gồm quận San Mateo và Santa Clara.",
   },
 
@@ -812,7 +812,7 @@ const TRANSLATIONS = {
     topbar_offer:    "신규 고객 정기 서비스로 매회 최대 15% 절약 — 주간 −15%, 격주 −10%",
     topbar_phone:    "전화 또는 문자: <span class='accent'>(650) 619-3504</span>",
     topbar_products: "전문가급 제품 및 장비",
-    topbar_rating:   "<span class='accent'>5.0★</span> Google 리뷰 만점",
+    topbar_rating:   "<span class='accent'>4.7★</span> Google 리뷰 평점",
     topbar_insured:  "신원 조회 완료 · 보증(bonded) · 완전 보험 가입 팀",
     topbar_app:      "다운로드 불필요 — 어떤 폰에서도 앱 바로 열기",
 
@@ -834,7 +834,7 @@ const TRANSLATIONS = {
     trust_2: "🌿 친환경 제품",
     trust_3: "💯 100% 만족 보장",
     trust_4: "📱 앱으로 예약 및 결제",
-    trust_5: "⭐ Google 5.0★",
+    trust_5: "⭐ Google 4.7★",
     trust_6: "🔒 완전 보험 가입",
 
     services_label:    "서비스",
@@ -930,7 +930,7 @@ const TRANSLATIONS = {
     aeo_how: "웹 앱으로 60초 안에 예약하세요: 서비스 선택, 빈도 선택, 날짜와 시간 선택, 주소 확인. Stripe로 결제. 팀이 도착하여 서비스를 수행하고, 만족을 확인하기 위해 함께 점검합니다.",
     aeo_how2: "웹 앱으로 60초 안에 예약하세요: 서비스 선택, 빈도 선택, 날짜와 시간 선택, 주소 확인. Stripe로 결제. 팀이 도착하여 서비스를 수행하고, 만족을 확인하기 위해 함께 점검합니다.",
     aeo_why: "Signature Luxury Cleaning은 2023년부터 오너가 직접 운영하며, 프랜차이즈나 콜센터가 아닙니다. 모든 대화는 오너에게 직접 전달됩니다. 모든 청소원은 신원 조회, 보증, 개인 교육을 받습니다. 전액 배상 보험에 가입되어 있습니다.",
-    aeo_reviews: "Signature Luxury Cleaning은 Google에서 5.0★ 평점을 유지하며, Palo Alto, Mountain View, Cupertino, Belmont, Burlingame 고객들의 리뷰가 있습니다. 고객들은 일관성, 전문성, 개인 공간 존중을 꾸준히 언급합니다.",
+    aeo_reviews: "Signature Luxury Cleaning은 Google에서 4.7★ 평점을 유지하며, Palo Alto, Mountain View, Cupertino, Belmont, Burlingame 고객들의 리뷰가 있습니다. 고객들은 일관성, 전문성, 개인 공간 존중을 꾸준히 언급합니다.",
     aeo_areas: "반도와 실리콘밸리 전역 23개 도시에 서비스를 제공합니다 — Burlingame, San Mateo부터 San Jose까지. 대부분 지역 당일 서비스 가능. San Mateo 카운티와 Santa Clara 카운티 전역을 커버합니다.",
   }
 ,
@@ -942,7 +942,7 @@ const TRANSLATIONS = {
     topbar_offer: "新規のお客様は定期サービスで毎回最大15%オフ — 毎週−15%、隔週−10%",
     topbar_phone: "電話・SMS：<span class='accent'>(650) 619-3504</span>",
     topbar_products: "プロ仕様の洗剤と機材",
-    topbar_rating: "<span class='accent'>5.0★</span> Googleレビュー満点評価",
+    topbar_rating: "<span class='accent'>4.7★</span> Googleレビュー評価",
     topbar_insured: "身元調査済み・身元保証・保険完備のチーム",
     topbar_app: "ダウンロード不要 — どのスマホでもアプリを開けます",
     nav_services: "サービス",
@@ -969,7 +969,7 @@ const TRANSLATIONS = {
     mockup_welcome: "おかえりなさい！",
     mockup_services: "サービス一覧",
     mockup_book: "今すぐ予約 — アプリで安全に決済",
-    badge_rating: "5.0 — 満点評価",
+    badge_rating: "4.7 — Google評価",
     badge_booking: "予約確定！",
     svc_regular: "定期清掃",
     svc_deep: "ディープ",
@@ -1093,7 +1093,7 @@ const TRANSLATIONS = {
     ba_cap3: "シャワー・タイルの復元",
     reviews_label: "お客様の声",
     reviews_title: "シリコンバレーの皆様の<br><em>ご評価は？</em>",
-    aeo_reviews: "Signature Luxury CleaningはGoogleで5.0★評価。Palo Alto、Mountain View、Cupertino、Belmont、Burlingameのお客様からレビューをいただいています。安定した品質、プロ意識、プライバシーへの配慮が高く評価されています。",
+    aeo_reviews: "Signature Luxury CleaningはGoogleで4.7★評価。Palo Alto、Mountain View、Cupertino、Belmont、Burlingameのお客様からレビューをいただいています。安定した品質、プロ意識、プライバシーへの配慮が高く評価されています。",
     reviews_count: "シリコンバレー＆ペニンシュラの数百のご家庭にご利用いただいています",
     rev1_text: "「Palo Altoで4社試しましたが、Signatureがダントツです。丁寧でプロフェッショナル、毎回家中が良い香りになります。」",
     rev2_text: "「退去清掃をお願いして敷金$3,200が全額戻ってきました！思いもよらない所まで清掃してくれて、価格以上の価値があります。」",
