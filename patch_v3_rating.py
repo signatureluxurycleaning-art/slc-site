@@ -30,6 +30,10 @@ PAIRS = [
     ('"ratingValue": "5.0"', f'"ratingValue": "{RATING}"'),
     ('"ratingCount": "12"', f'"ratingCount": "{COUNT}"'),
     ('"reviewCount": "12"', f'"reviewCount": "{COUNT}"'),
+    # seção de reviews da home (texto fixo que o robô lê antes do i18n)
+    ('<div class="rating-big">5.0</div>', '<div class="rating-big">4.7</div>'),
+    ("7 verified reviews — 100% five-star rating on Google",
+     "Hundreds of happy families across Silicon Valley &amp; Peninsula"),
     # "nota máxima" por língua (depois da troca numérica acima)
     ("</span> Perfect score on Google Reviews", "</span> Google Reviews rating"),
     (">Perfect score on Google Reviews<", ">Google Reviews rating<"),
@@ -43,7 +47,8 @@ PAIRS = [
 
 # "perfeito" como elogio à limpeza (how4_desc hi/vi) é idioma, não alegação de
 # nota — por isso os termos abaixo são os de NOTA, não a palavra solta.
-FORBIDDEN = ["5.0★", "Perfect score", "Perfect Score", "评分满分", "परफेक्ट स्कोर",
+FORBIDDEN = ["5.0★", '"rating-big">5.0<', "100% five-star",
+             "Perfect score", "Perfect Score", "评分满分", "परफेक्ट स्कोर",
              "Perpektong marka", "hoàn hảo trên Google", "리뷰 만점", "満点評価",
              '"ratingValue": "5.0"', '"ratingCount": "12"']
 
