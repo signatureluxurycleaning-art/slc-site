@@ -155,6 +155,12 @@ for page in sorted(SITE.rglob("index.html")) + [SITE / "privacy.html", SITE / "4
         continue
     edit(page, [('href="/privacy.html"', 'href="/privacy-policy/"')], min_hits=0, optional=True)
 
+# ------------------------------------- 5b. área real em TODAS as páginas
+# "Belmont to Los Gatos" era o selo antigo; a área que o dono atende (e que o
+# resto do site anuncia) é Burlingame a San Jose. Troca em todos os HTML.
+for page in sorted(SITE.rglob("*.html")):
+    edit(page, [("Belmont to Los Gatos", "Burlingame to San Jose")], min_hits=0, optional=True)
+
 # ---------------------------------------------------------------- verificação
 left_145 = sum(p.read_text(encoding="utf-8").count("$145/visit (weekly") for p in location_pages)
 if left_145:
@@ -162,6 +168,9 @@ if left_145:
 left_privacy = sum(1 for p in SITE.rglob("*.html") if 'href="/privacy.html"' in p.read_text(encoding="utf-8"))
 if left_privacy:
     errors.append(f"ainda restam {left_privacy} páginas linkando /privacy.html")
+left_area = sum(1 for p in SITE.rglob("*.html") if "Belmont to Los Gatos" in p.read_text(encoding="utf-8"))
+if left_area:
+    errors.append(f"ainda restam {left_area} páginas com 'Belmont to Los Gatos'")
 desc_len = len(NEW_DESC)
 if not 120 <= desc_len <= 160:
     errors.append(f"meta description com {desc_len} chars (fora de 120-160)")
