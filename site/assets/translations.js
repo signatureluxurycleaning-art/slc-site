@@ -32,7 +32,7 @@ const TRANSLATIONS = {
     nav_app:      "📱 See Prices & Book",
 
     // Hero
-    hero_badge:       "⭐ #1 Rated Cleaning Service in Silicon Valley & Peninsula",
+    hero_badge:       "⭐ 5.0 on Google — 1,200+ cleanings across Silicon Valley & Peninsula",
     hero_stat_families: "Cleanings Completed",
     hero_stat_rating:   "Google Rating",
     hero_stat_cities:   "Cities Served",
