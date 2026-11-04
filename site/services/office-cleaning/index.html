@@ -114,7 +114,7 @@ document.addEventListener('click', function (e) {
   </div>
 
   <section class="hero" style="min-height:480px;">
-    <div class="hero-bg" style="background-image:url('/assets/img/service_office.jpg');"></div>
+    <div class="hero-bg" style="background-image:url('/assets/img/office_hero.webp');"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content" style="grid-template-columns:1fr;text-align:center;max-width:900px;">
       <div>
@@ -242,6 +242,52 @@ document.addEventListener('click', function (e) {
       </div>
     </div>
   </section>
+
+  <!-- Spaces we care for -->
+  <section class="section" style="padding:4rem 2rem;background:#fff;">
+    <div style="max-width:1100px;margin:0 auto;">
+      <h2 class="section-title" style="text-align:center;margin-bottom:1rem;">Spaces we care for</h2>
+      <p class="aeo-snippet" style="text-align:center;max-width:700px;margin:0 auto 2.5rem;">From single-suite offices to medical practices — we tailor the cleaning plan to your space and schedule it around your business hours.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.25rem;">
+        <figure class="space-card">
+          <picture>
+            <source srcset="/assets/img/office_suites.webp" type="image/webp">
+            <img src="/assets/img/office_suites.jpg" alt="Clean modern office suite with break room in Silicon Valley" loading="lazy" width="1200" height="801">
+          </picture>
+          <figcaption><strong>Offices &amp; suites</strong><span>Workstations, conference rooms, break areas</span></figcaption>
+        </figure>
+        <figure class="space-card">
+          <picture>
+            <source srcset="/assets/img/office_dental.webp" type="image/webp">
+            <img src="/assets/img/office_dental.jpg" alt="Spotless dental office treatment room" loading="lazy" width="1200" height="802">
+          </picture>
+          <figcaption><strong>Medical &amp; dental practices</strong><span>Waiting rooms, front desks, non-clinical areas</span></figcaption>
+        </figure>
+        <figure class="space-card">
+          <picture>
+            <source srcset="/assets/img/office_lobby.webp" type="image/webp">
+            <img src="/assets/img/office_lobby.jpg" alt="Bright, clean office lobby and reception lounge" loading="lazy" width="1200" height="799">
+          </picture>
+          <figcaption><strong>Lobbies &amp; reception</strong><span>First impressions your clients notice</span></figcaption>
+        </figure>
+        <figure class="space-card">
+          <picture>
+            <source srcset="/assets/img/service_office.webp" type="image/webp">
+            <img src="/assets/img/service_office.jpg" alt="Office workstations cleaned after hours" loading="lazy" width="800" height="1066">
+          </picture>
+          <figcaption><strong>Cleaned after hours</strong><span>Evenings &amp; weekends — ready for the morning</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <style>
+    .space-card{position:relative;margin:0;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);aspect-ratio:4/3;}
+    .space-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+    .space-card:hover img{transform:scale(1.04);}
+    .space-card figcaption{position:absolute;inset:auto 0 0 0;padding:2.2rem 1.1rem .9rem;background:linear-gradient(transparent,rgba(10,20,35,.82));color:#fff;display:flex;flex-direction:column;gap:.15rem;}
+    .space-card figcaption strong{font-size:1rem;}
+    .space-card figcaption span{font-size:.78rem;opacity:.85;}
+  </style>
 
   <!-- What's included -->
   <section class="section" style="padding:4rem 2rem;background:var(--cream);">
