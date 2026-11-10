@@ -286,6 +286,49 @@
     .service-card .service-cta{position:relative;z-index:2}
     .hero-prices{display:none}@media(max-width:1024px){.hero-content{padding:3.5rem 2rem 3rem}.hero-title{font-size:clamp(2.3rem,8vw,3.2rem)}.hero-prices{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.6rem}.hp-chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.07);border:1px solid rgba(200,151,58,.45);color:#fff;font-size:.86rem;font-weight:500;padding:.5rem .85rem;border-radius:50px;white-space:nowrap}.hp-chip strong{color:var(--gold-light);font-weight:700}.hp-note{flex-basis:100%;color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.15rem}}
   </style>
+  <!-- slc-unpacking-banner v1 (10/11/2026): destaque do servico novo no topo da home -->
+  <style id="slc-unpacking-banner">
+    .upb-pill-row{margin:0 0 .9rem}
+    .upb-pill{display:inline-flex;align-items:center;gap:.55rem;background:linear-gradient(135deg,#C8973A,#E2B96A);color:#0C1A2E;font-size:.84rem;font-weight:700;line-height:1.25;padding:.42rem 1rem .42rem .45rem;border-radius:50px;box-shadow:0 6px 22px rgba(200,151,58,.35);transition:transform .15s}
+    .upb-pill:hover{transform:translateY(-1px)}
+    .upb-pill-new{flex:none;background:#0C1A2E;color:#E2B96A;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;padding:.26rem .6rem;border-radius:50px}
+    .upb{background:linear-gradient(180deg,#FBF3E2 0%,#FAF8F4 100%);border-top:3px solid #C8973A;padding:4rem 1.5rem;color:#0C1A2E}
+    .upb-inner{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:3.5rem;align-items:center}
+    .upb-eyebrow{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A6420;margin-bottom:.9rem}
+    .upb-new{background:#0C1A2E;color:#E2B96A;padding:.3rem .75rem;border-radius:50px;font-size:.7rem;letter-spacing:.14em}
+    .upb-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.6vw,3rem);line-height:1.1;font-weight:700;color:#0C1A2E;margin:0 0 1rem;text-wrap:balance}
+    .upb-title em{font-style:italic;color:#B5832B}
+    .upb-lead{font-size:1.05rem;line-height:1.7;color:#374151;margin:0 0 1.2rem;max-width:560px}
+    .upb-points{list-style:none;padding:0;margin:0 0 1.4rem;display:grid;gap:.6rem;max-width:560px}
+    .upb-points li{position:relative;padding-left:1.7rem;font-size:.96rem;line-height:1.55;color:#374151}
+    .upb-points li:before{content:'✓';position:absolute;left:0;top:0;color:#B5832B;font-weight:700}
+    .upb-points strong{color:#0C1A2E}
+    .upb-price{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:.35rem .5rem;background:#fff;border:1px solid rgba(200,151,58,.45);border-radius:14px;padding:.7rem 1rem;font-size:.95rem;color:#374151;margin:0 0 1.5rem}
+    .upb-price strong{font-family:'Cormorant Garamond',serif;font-size:1.9rem;line-height:1;color:#0C1A2E}
+    .upb-price span{flex-basis:100%;color:#6B7280;font-size:.86rem}
+    .upb-actions{display:flex;flex-wrap:wrap;gap:.8rem}
+    .upb-btn{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#C8973A,#E2B96A);color:#0C1A2E;font-weight:700;font-size:.98rem;padding:.9rem 1.5rem;border-radius:50px;box-shadow:0 8px 24px rgba(200,151,58,.35);transition:transform .15s}
+    .upb-btn:hover{transform:translateY(-1px)}
+    .upb-btn-ghost{background:transparent;box-shadow:none;border:1.5px solid #0C1A2E;color:#0C1A2E}
+    .upb-visual{position:relative}
+    .upb-mosaic{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .upb-cell{position:relative;display:block;border-radius:14px;overflow:hidden;background:#E9E2D3;aspect-ratio:4/3;box-shadow:0 10px 30px rgba(12,26,46,.12)}
+    .upb-cell img{width:100%;height:100%;object-fit:cover;display:block}
+    .upb-cell span{position:absolute;left:.6rem;bottom:.6rem;background:rgba(12,26,46,.82);color:#fff;font-size:.72rem;font-weight:600;letter-spacing:.04em;padding:.28rem .65rem;border-radius:50px}
+    .upb-boxes{display:flex;align-items:center;gap:1rem;margin-top:10px;background:#fff;border-radius:14px;padding:.8rem 1.1rem .8rem .8rem;box-shadow:0 10px 30px rgba(12,26,46,.1);border:1px solid rgba(200,151,58,.35)}
+    .upb-boxes svg{flex:none;width:118px;height:auto;display:block}
+    .upb-boxes p{margin:0;font-size:.8rem;line-height:1.35;color:#4B5563}
+    .upb-boxes p strong{display:block;color:#0C1A2E;font-size:.9rem}
+    .upb-svc{display:flex;align-items:center;justify-content:space-between;gap:1.25rem;flex-wrap:wrap;padding:1.5rem 1.75rem;border-radius:16px;background:#0C1A2E;border:1px solid rgba(200,151,58,.45);color:#fff;text-decoration:none;text-align:left}
+    .upb-svc-text{display:flex;flex-direction:column;gap:.35rem;flex:1 1 320px}
+    .upb-svc-kicker{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E2B96A}
+    .upb-svc-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;line-height:1.2;color:#fff}
+    .upb-svc-desc{font-size:.92rem;color:rgba(255,255,255,.75);line-height:1.6}
+    .upb-svc-cta{background:linear-gradient(135deg,#C8973A,#E2B96A);color:#0C1A2E;font-weight:700;font-size:.85rem;padding:.75rem 1.4rem;border-radius:50px;white-space:nowrap}
+    .upb-foot-new{display:inline-block;margin-left:.35rem;background:#C8973A;color:#0C1A2E;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:.1rem .4rem;border-radius:50px;vertical-align:middle}
+    @media(max-width:960px){.upb{padding:2.8rem 1.25rem 3rem}.upb-inner{grid-template-columns:1fr;gap:2.2rem}}
+    @media(max-width:520px){.upb-pill{font-size:.78rem}.upb-btn{flex:1 1 100%}.upb-boxes svg{width:92px}.upb-boxes p{font-size:.74rem}.upb-boxes p strong{font-size:.82rem}.upb-cell span{font-size:.66rem}}
+  </style>
   <!-- Full stylesheet (async, non-render-blocking) -->
   <link rel="preload" href="assets/style.css?v=20260602" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="assets/style.css?v=20260602"></noscript>
@@ -341,6 +384,7 @@ document.addEventListener('click', function (e) {
   <!-- ========== TOPBAR ========== -->
   <div class="topbar">
     <div class="topbar-track" id="topbarTrack">
+      <span>📦 <a class="accent" href="/services/move-in-unpacking/">New: Move-In Unpacking &amp; Organizing</a> — we unpack your boxes and set up every room</span>
       <span data-i18n="topbar_discount">✨ New clients save up to 15% on every visit with recurring service — weekly −15%, bi-weekly −10%</span>
       <span>📞 <span data-i18n="topbar_call">Call or text:</span> <span class="accent">(650) 619-3504</span></span>
       <span data-i18n="topbar_products">🏆 Professional-grade products &amp; equipment</span>
@@ -348,6 +392,7 @@ document.addEventListener('click', function (e) {
       <span data-i18n="topbar_insured">✅ Background-checked, bonded &amp; fully insured team</span>
       <span data-i18n="topbar_app">📱 No download needed — open our app on any phone</span>
       <!-- duplicate for seamless loop -->
+      <span>📦 <a class="accent" href="/services/move-in-unpacking/">New: Move-In Unpacking &amp; Organizing</a> — we unpack your boxes and set up every room</span>
       <span data-i18n="topbar_discount">✨ New clients save up to 15% on every visit with recurring service — weekly −15%, bi-weekly −10%</span>
       <span>📞 <span data-i18n="topbar_call">Call or text:</span> <span class="accent">(650) 619-3504</span></span>
       <span data-i18n="topbar_products">🏆 Professional-grade products &amp; equipment</span>
@@ -424,6 +469,7 @@ document.addEventListener('click', function (e) {
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-text">
+        <div class="upb-pill-row"><a class="upb-pill" href="/services/move-in-unpacking/"><span class="upb-pill-new">New</span>Move-In Unpacking &amp; Organizing&nbsp;→</a></div>
         <div class="hero-badge" data-i18n="hero_badge">⭐ 4.7 on Google — 1,200+ cleanings across Silicon Valley & Peninsula</div>
         <h1 class="hero-title" data-i18n="hero_title">
           Your Home,<br>
@@ -520,6 +566,77 @@ document.addEventListener('click', function (e) {
             <span class="badge-icon">✅</span>
             <div><strong data-i18n="badge_booking">Booking Confirmed!</strong><br><small>Sarah W. — Sunnyvale</small></div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- new-service-unpacking-banner (10/11/2026): servico novo em destaque logo abaixo do hero -->
+  <section class="upb" id="new-unpacking" aria-labelledby="upb-title">
+    <div class="upb-inner">
+      <div class="upb-text">
+        <div class="upb-eyebrow"><span class="upb-new">New</span> Move-in service · by the hour</div>
+        <h2 class="upb-title" id="upb-title">Moving in? We unpack your boxes and <em>set up every room.</em></h2>
+        <p class="upb-lead">Our team unpacks your boxes and puts everything in its place, room by room: kitchen, bedrooms, bathrooms and closets.</p>
+        <ul class="upb-points">
+          <li><strong>Clean first.</strong> Before anything goes in, we clean the inside of every cabinet, drawer and closet.</li>
+          <li><strong>Everything in its place.</strong> Your home is clean and set up from day one.</li>
+          <li><strong>Boxes handled.</strong> We break down the empty boxes as we go.</li>
+        </ul>
+        <div class="upb-price"><strong>$75</strong> per hour, per professional <span>Team of 3 professionals · 3-hour minimum</span></div>
+        <div class="upb-actions">
+          <a class="upb-btn" href="/services/move-in-unpacking/">See how it works →</a>
+          <a class="upb-btn upb-btn-ghost" href="/services/move-in-unpacking/#quote-form">Request an estimate</a>
+        </div>
+      </div>
+      <div class="upb-visual">
+        <div class="upb-mosaic">
+          <a class="upb-cell" href="/services/move-in-unpacking/" aria-label="Move-In Unpacking &amp; Organizing: kitchen">
+            <picture>
+              <source srcset="assets/img/unpack_kitchen.webp" type="image/webp">
+              <img src="assets/img/unpack_kitchen.jpg" alt="Clean, organized kitchen" width="720" height="540" loading="lazy" decoding="async">
+            </picture>
+            <span>Kitchen</span>
+          </a>
+          <a class="upb-cell" href="/services/move-in-unpacking/" aria-label="Move-In Unpacking &amp; Organizing: bedrooms">
+            <picture>
+              <source srcset="assets/img/unpack_bedroom.webp" type="image/webp">
+              <img src="assets/img/unpack_bedroom.jpg" alt="Tidy bedroom" width="720" height="540" loading="lazy" decoding="async">
+            </picture>
+            <span>Bedrooms</span>
+          </a>
+          <a class="upb-cell" href="/services/move-in-unpacking/" aria-label="Move-In Unpacking &amp; Organizing: bathrooms">
+            <picture>
+              <source srcset="assets/img/unpack_bathroom.webp" type="image/webp">
+              <img src="assets/img/unpack_bathroom.jpg" alt="Clean, organized bathroom" width="720" height="540" loading="lazy" decoding="async">
+            </picture>
+            <span>Bathrooms</span>
+          </a>
+          <a class="upb-cell" href="/services/move-in-unpacking/" aria-label="Move-In Unpacking &amp; Organizing: living areas">
+            <picture>
+              <source srcset="assets/img/unpack_living.webp" type="image/webp">
+              <img src="assets/img/unpack_living.jpg" alt="Tidy living room" width="720" height="540" loading="lazy" decoding="async">
+            </picture>
+            <span>Every room</span>
+          </a>
+        </div>
+        <div class="upb-boxes">
+          <svg viewBox="0 0 220 152" role="img" aria-label="Moving boxes labeled by room" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="110" cy="144" rx="100" ry="6" fill="#0C1A2E" opacity=".1"/>
+            <rect x="12" y="74" width="94" height="68" rx="3" fill="#E2B96A" stroke="#0C1A2E" stroke-width="2.5"/>
+            <rect x="52" y="75.2" width="14" height="65.6" fill="#F5E6C8"/>
+            <rect x="24" y="98" width="70" height="20" rx="3" fill="#fff" stroke="#0C1A2E" stroke-width="1.5"/>
+            <text x="59" y="112" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="700" fill="#0C1A2E" letter-spacing=".8">KITCHEN</text>
+            <rect x="112" y="74" width="96" height="68" rx="3" fill="#D9A85B" stroke="#0C1A2E" stroke-width="2.5"/>
+            <rect x="153" y="75.2" width="14" height="65.6" fill="#F5E6C8"/>
+            <rect x="125" y="98" width="70" height="20" rx="3" fill="#fff" stroke="#0C1A2E" stroke-width="1.5"/>
+            <text x="160" y="112" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="700" fill="#0C1A2E" letter-spacing=".8">BEDROOM</text>
+            <rect x="60" y="12" width="96" height="62" rx="3" fill="#EBC680" stroke="#0C1A2E" stroke-width="2.5"/>
+            <rect x="101" y="13.2" width="14" height="59.6" fill="#F5E6C8"/>
+            <rect x="73" y="33" width="70" height="20" rx="3" fill="#fff" stroke="#0C1A2E" stroke-width="1.5"/>
+            <text x="108" y="47" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="700" fill="#0C1A2E" letter-spacing=".8">CLOSET</text>
+          </svg>
+          <p><strong>From boxes to a home that's set up.</strong>Label your boxes by room for the smoothest day.</p>
         </div>
       </div>
     </div>
@@ -631,6 +748,18 @@ document.addEventListener('click', function (e) {
       <h2 class="section-title" data-i18n="services_title">What cleaning services<br><em>does SLC offer?</em></h2>
       <p class="aeo-snippet" data-i18n="aeo_services">Signature Luxury Cleaning offers eight services across Silicon Valley: Regular Cleaning, Deep Cleaning, Move In/Out, Post-Construction, Airbnb Turnover, Office Cleaning, Spring Cleaning, and the White Glove Deep Clean. All include eco-friendly products and a 100% satisfaction guarantee.</p>
       <p class="section-subtitle" data-i18n="services_subtitle">Eight professional cleaning services — luxury-level attention to detail on every single visit. Book any service directly from our app.</p>
+
+      <!-- new-service-unpacking (10/11/2026): servico novo em PRIMEIRO, acima da grade de 8 (traducoes da grade intactas) -->
+      <div style="margin-top:2.25rem">
+      <a class="upb-svc" href="/services/move-in-unpacking/">
+        <span class="upb-svc-text">
+          <span class="upb-svc-kicker">📦 New · Move-in service</span>
+          <span class="upb-svc-title">Move-In Unpacking &amp; Organizing</span>
+          <span class="upb-svc-desc">Moving into a new home? We unpack your boxes and set up every room — and clean the inside of every cabinet, drawer and closet before anything goes in. $75 per hour per professional.</span>
+        </span>
+        <span class="upb-svc-cta">See how it works →</span>
+      </a>
+      </div>
 
       <div class="services-grid">
 
@@ -812,17 +941,6 @@ document.addEventListener('click', function (e) {
 
       </div>
 
-      <!-- new-service-unpacking (09/11/2026): servico novo por hora; fora da grade de 8 para nao mexer nas traducoes -->
-      <div style="margin-top:2rem">
-      <a href="/services/move-in-unpacking/" style="display:flex;align-items:center;justify-content:space-between;gap:1.25rem;flex-wrap:wrap;padding:1.5rem 1.75rem;border-radius:16px;background:#0C1A2E;border:1px solid rgba(200,151,58,.45);color:#fff;text-decoration:none">
-        <span style="display:flex;flex-direction:column;gap:.35rem;flex:1 1 320px;text-align:left">
-          <span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E2B96A">📦 New · Move-in service</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;line-height:1.2;color:#fff">Move-In Unpacking &amp; Organizing</span>
-          <span style="font-size:.92rem;color:rgba(255,255,255,.75);line-height:1.6">Moving into a new home? We unpack your boxes and set up every room — and clean the inside of every cabinet, drawer and closet before anything goes in. $75 per hour per professional.</span>
-        </span>
-        <span style="background:linear-gradient(135deg,#C8973A,#E2B96A);color:#0C1A2E;font-weight:700;font-size:.85rem;padding:.75rem 1.4rem;border-radius:50px;white-space:nowrap">See how it works →</span>
-      </a>
-      </div>
     </div>
   </section>
 
@@ -1417,6 +1535,7 @@ document.addEventListener('click', function (e) {
         <div class="footer-col">
           <h4 data-i18n="footer_services">Services</h4>
           <ul>
+            <li><a href="services/move-in-unpacking/">Move-In Unpacking &amp; Organizing<span class="upb-foot-new">NEW</span></a></li>
             <li><a href="services/regular-cleaning/" data-i18n="svc1_title">Regular Cleaning</a></li>
             <li><a href="services/deep-cleaning/" data-i18n="svc2_title">Deep Cleaning</a></li>
             <li><a href="services/move-in-out-cleaning/" data-i18n="svc3_title">Move In / Move Out</a></li>
