@@ -1,0 +1,47 @@
+name: Apply site patch
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: "Patch a aplicar (arquivo patch_*.py na raiz do repo)"
+        required: true
+        default: "patch_v4_consistency.py"
+      message:
+        description: "Mensagem do commit"
+        required: false
+        default: "site: aplicar patch v4 (site igual ao app)"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch (idempotente, com verificacao)
+        env:
+          SCRIPT: ${{ github.event.inputs.script }}
+        run: |
+          case "$SCRIPT" in
+            patch_v1.py|patch_v2_seo.py|patch_v3_rating.py)
+              echo "Os patches v1, v2 e v3 nao podem mais ser reaplicados: o site mudou depois deles."
+              exit 1
+              ;;
+          esac
+          if ! printf '%s' "$SCRIPT" | grep -Eq '^patch_[a-z0-9_]+\.py$'; then
+            echo "Nome de patch invalido: use um arquivo patch_*.py da raiz."
+            exit 1
+          fi
+          python3 "$SCRIPT"
+
+      - name: Commit
+        env:
+          MSG: ${{ github.event.inputs.message }}
+        run: |
+          git config user.name "slc-patch"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A site
+          git commit -m "${MSG:-site: aplicar patch}" -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01G93oBnawaNHnuAkd3RsaUv" || echo "nada novo"
+          git push
